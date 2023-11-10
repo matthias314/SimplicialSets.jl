@@ -113,7 +113,7 @@ linear_filter(x::AbstractSimplex) = !isdegenerate(x)
 deg(x::AbstractSimplex) = dim(x)
 
 @linear_kw function diff(x::T;
-        coefftype = Sign,
+        coefftype = Int,
         addto = zero(Linear{T,coefftype}),
         coeff = ONE,
         is_filtered = false) where T <: AbstractSimplex

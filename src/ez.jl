@@ -82,14 +82,14 @@ ez_term_type(f, T, U...) = _ez_term_type(f, ez_term_type(f, T), U...)
 
 @linear_kw function ez(xs::AbstractSimplex...;
         f = ez_prod,
-        coefftype = Sign,
+        coefftype = Int,
         addto = zero(Linear{ez_term_type(f, typeof.(xs)...),coefftype}),
         coeff = one(coeff_type(addto)),
-	sizehint = true,
+        sizehint = true,
         is_filtered = false)
 
     isempty(xs) && return addmul!(addto, f(), coeff; is_filtered = true)
-    
+
     is_filtered || all(!isdegenerate, xs) || return addto
 
     sizehint && sizehint!(addto, length(addto) + multinomial(map(dim, xs)...))
@@ -128,7 +128,7 @@ end
 end
 
 @linear_kw function aw(x::ProductSimplex{T};
-        coefftype = Sign,
+        coefftype = Int,
         addto = zero(Linear{Tensor{T},coefftype}),
         coeff = ONE,
         is_filtered = false) where T <: Tuple{Vararg{AbstractSimplex}}
@@ -147,10 +147,10 @@ deg(::typeof(aw)) = Zero()
 #
 
 @linear_kw function shih_opp(z::ProductSimplex{Tuple{S, T}};
-        coefftype = Sign,
+        coefftype = Int,
         addto = zero(Linear{ProductSimplex{Tuple{S,T}},coefftype}),
         coeff = ONE,
-	sizehint = true,
+        sizehint = true,
         is_filtered = false) where {S <: AbstractSimplex, T <: AbstractSimplex}
 
     iszero(coeff) && return addto
@@ -185,10 +185,10 @@ end
 deg(::typeof(shih_opp)) = 1
 
 @linear_kw function shih_eml(z::ProductSimplex{Tuple{S, T}};
-        coefftype = Sign,
+        coefftype = Int,
         addto = zero(Linear{ProductSimplex{Tuple{S,T}},coefftype}),
         coeff = ONE,
-	sizehint = true,
+        sizehint = true,
         is_filtered = false) where {S <: AbstractSimplex, T <: AbstractSimplex}
 
     iszero(coeff) && return addto
