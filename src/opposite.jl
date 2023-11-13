@@ -38,7 +38,7 @@ q2(t::Tensor) = sum0(map(q2, factors(t)))
 
 @linear_kw function opposite(a::AbstractLinear{T,R};
         coefftype = R,
-        addto = zero(Linear{return_type(opposite, T),coefftype}),
+        addto = zero(Linear{return_type(opposite, T),unval(coefftype)}),
         coeff = ONE) where {T,R}
     iszero(coeff) && return addto
     for (x, c) in a

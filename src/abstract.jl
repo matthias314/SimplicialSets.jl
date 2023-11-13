@@ -114,7 +114,7 @@ deg(x::AbstractSimplex) = dim(x)
 
 @linear_kw function diff(x::T;
         coefftype = Int,
-        addto = zero(Linear{T,coefftype}),
+        addto = zero(Linear{T,unval(coefftype)}),
         coeff = ONE,
         is_filtered = false) where T <: AbstractSimplex
     if iszero(coeff)

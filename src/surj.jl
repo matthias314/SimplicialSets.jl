@@ -53,7 +53,7 @@ Surjection(u) = Surjection{maximum(u; init = 0)}(u)
 
 @linear_kw function diff(surj::Surjection{k};
         coefftype = Int,
-        addto = zero(Linear{Surjection{k},coefftype}),
+        addto = zero(Linear{Surjection{k},unval(coefftype)}),
         coeff = ONE,
         is_filtered = false) where k
     (; u, f, v) = surj
@@ -125,7 +125,7 @@ end
 
 @linear_kw function (surj::Surjection{k})(x::T;
         coefftype = Int,
-        addto = zero(Linear{Tensor{NTuple{k,T}},coefftype}),
+        addto = zero(Linear{Tensor{NTuple{k,T}},unval(coefftype)}),
         coeff = one(coeff_type(addto)),
         is_filtered = false) where {k, T <: AbstractSimplex}
 

@@ -386,6 +386,7 @@ end
     for k in 0:8
         t = Tensor(ntuple(Returns(SymbolicSimplex('i', 1)), k))
 	@inferred ez(t)
+	@inferred ez(t; coefftype = Val(Float16))
     end
 
     for m in 0:4, n in 0:4
@@ -426,6 +427,7 @@ end
     for k in 0:8
         w = ProductSimplex(ntuple(Returns(SymbolicSimplex('i', 1)), k); dim = 1)
 	@inferred aw(w)
+	@inferred aw(w; coefftype = Val(Float32))
     end
 
     for n in 0:8
@@ -471,6 +473,9 @@ end
         x = SymbolicSimplex('x', n)
         y = SymbolicSimplex('y', n)
         w = ProductSimplex(x, y)
+        @inferred shih_eml(w; coefftype = Val(Int16))
+        @inferred shih_opp(w; coefftype = Val(Int32))
+
         b = Linear(w => 1)
     
         c1 = b |> shih_eml |> opposite_swap
