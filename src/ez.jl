@@ -244,7 +244,7 @@ function _mul(addto, coeff, t, a, b...)
     end
 end
 
-function *(a::Linear{<:AbstractSimplex}...)
+function *(a::AbstractLinear{<:AbstractSimplex}...)
 # TODO: add addto & coeff
     R = promote_type(map(coefftype, a)...)
     T = return_type(*, map(termtype, a)...)

@@ -36,7 +36,7 @@ q2(x::AbstractSimplex) = ifelse((dim(x)+1) & 2 == 0, 0, 1)
 
 q2(t::Tensor) = sum0(map(q2, factors(t)))
 
-@linear_kw function opposite(a::Linear{T,R};
+@linear_kw function opposite(a::AbstractLinear{T,R};
         coefftype = R,
         addto = zero(Linear{return_type(opposite, T),coefftype}),
         coeff = ONE) where {T,R}
