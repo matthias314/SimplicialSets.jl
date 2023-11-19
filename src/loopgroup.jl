@@ -54,7 +54,11 @@ function LoopGroupSimplex(x::T) where T <: AbstractSimplex
     end
 end
 
-show(io::IO, g::LoopGroupSimplex) = print(io, '⟨', join(g.gens, ','), '⟩')
+function show(io::IO, g::LoopGroupSimplex)
+    print(io, '⟨')
+    join(io, g.gens, ',')
+    print(io, '⟩')
+end
 
 dim(g::LoopGroupSimplex) = g.dim
 
