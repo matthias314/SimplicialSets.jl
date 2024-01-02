@@ -109,6 +109,15 @@ flatten(x::ProductSimplex) = ProductSimplex(_flatten(x); dim = dim(x))
 # regrouping
 #
 
-using LinearCombinations: regroup_eval_expr, _getindex
+using LinearCombinations: regroup_check_arg, regroup_eval_expr
+import LinearCombinations: _length, _getindex
 
-(rg::Regroup)(x::ProductSimplex) = @inbounds regroup_eval_expr(rg, _getindex, ProductSimplex, x)
+_length(::Type{T}) where T <: ProductSimplex = @inbounds _length(T.parameters[1])
+
+@propagate_inbounds _getindex(::Type{T}, i) where T <: ProductSimplex = _getindex(T.parameters[1], i)
+
+function (rg::Regroup{A})(x::T) where {A,T<:ProductSimplex}
+    regroup_check_arg(ProductSimplex, typeof(A), T) ||
+        error("argument type $(typeof(x)) does not match first Regroup parameter $A")
+    @inbounds regroup_eval_expr(rg, _getindex, ProductSimplex, x)
+end
