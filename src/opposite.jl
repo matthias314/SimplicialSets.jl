@@ -2,7 +2,7 @@
 # OppositeSimplex datatype
 #
 
-export OppositeSimplex, opposite, qsign
+export OppositeSimplex, opposite
 
 struct OppositeSimplex{T<:AbstractSimplex} <: AbstractSimplex
     x::T
