@@ -101,7 +101,7 @@ end
 
 ez(t::Tensor; kw...) = ez(t...; kw...)
 
-hastrait(::typeof(ez), prop::Val, T::Type{<:Tensor}) = hastrait(ez, prop, T.parameters[1].parameters...)
+hastrait(::typeof(ez), prop::Val, ::Type{<:Tensor{T}}) where T <: Tuple = hastrait(ez, prop, fieldtypes(T)...)
 
 @multilinear ez
 

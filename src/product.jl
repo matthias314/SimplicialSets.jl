@@ -112,7 +112,7 @@ flatten(x::ProductSimplex) = ProductSimplex(_flatten(x); dim = dim(x))
 using LinearCombinations: regroup_check_arg, regroup_eval_expr
 import LinearCombinations: _length, _getindex
 
-_length(::Type{T}) where T <: ProductSimplex = @inbounds _length(T.parameters[1])
+_length(::Type{<:ProductSimplex{T}}) where T <: Tuple = _length(T)
 
 @propagate_inbounds _getindex(::Type{T}, i) where T <: ProductSimplex = _getindex(T.parameters[1], i)
 
