@@ -34,7 +34,7 @@ opposite(x::AbstractTensor) = Tensor((opposite(y) for y in x)...)
 q2(x::AbstractSimplex) = ifelse((dim(x)+1) & 2 == 0, 0, 1)
 # this is 0 if dim(x) == 0 or 3 mod 4, and 1 if dim(x) == 1 or 2 mod 4
 
-q2(t::AbstractTensor) = sum0(map(q2, factors(t)))
+q2(t::AbstractTensor) = sum0(map(q2, Tuple(t)))
 
 @linear_kw function opposite(a::AbstractLinear{T,R};
         coefftype = R,
