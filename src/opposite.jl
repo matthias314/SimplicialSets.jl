@@ -29,12 +29,12 @@ one(y::OppositeSimplex, n...) = OppositeSimplex(one(y.x, n...))
 opposite(x::AbstractSimplex) = OppositeSimplex(x)
 opposite(y::OppositeSimplex) = y.x
 opposite(x::ProductSimplex) = ProductSimplex((opposite(y) for y in x)...)
-opposite(x::Tensor) = Tensor((opposite(y) for y in x)...)
+opposite(x::AbstractTensor) = Tensor((opposite(y) for y in x)...)
 
 q2(x::AbstractSimplex) = ifelse((dim(x)+1) & 2 == 0, 0, 1)
 # this is 0 if dim(x) == 0 or 3 mod 4, and 1 if dim(x) == 1 or 2 mod 4
 
-q2(t::Tensor) = sum0(map(q2, factors(t)))
+q2(t::AbstractTensor) = sum0(map(q2, factors(t)))
 
 @linear_kw function opposite(a::AbstractLinear{T,R};
         coefftype = R,

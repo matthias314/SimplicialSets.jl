@@ -99,9 +99,9 @@ ez_term_type(f, T, U...) = _ez_term_type(f, ez_term_type(f, T), U...)
     addto
 end
 
-ez(t::Tensor; kw...) = ez(t...; kw...)
+ez(t::AbstractTensor; kw...) = ez(t...; kw...)
 
-hastrait(::typeof(ez), prop::Val, ::Type{<:Tensor{T}}) where T <: Tuple = hastrait(ez, prop, fieldtypes(T)...)
+hastrait(::typeof(ez), prop::Val, ::Type{<:AbstractTensor{T}}) where T <: Tuple = hastrait(ez, prop, fieldtypes(T)...)
 
 @multilinear ez
 

@@ -35,7 +35,7 @@ Base.one(y::BasicSimplex, n...) = BasicSimplex(one(y.x, n...))
 undo_basic(x::AbstractSimplex) = x
 undo_basic(y::BasicSimplex) = y.x
 undo_basic(x::ProductSimplex) = ProductSimplex((undo_basic(y) for y in x)...)
-undo_basic(x::Tensor) = Tensor((undo_basic(y) for y in x)...)
+undo_basic(x::AbstractTensor) = Tensor((undo_basic(y) for y in x)...)
 
 # undo_basic(a::Linear) = Linear(undo_basic(x) => c for (x, c) in a)
 @linear undo_basic
