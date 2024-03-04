@@ -4,6 +4,7 @@ using SimplicialSets: Interval, interval_length
 using SimplicialSets.TestHelpers
 
 using LinearCombinations: diff, signed
+const TENSORMAP = Tensor
 
 #
 # Interval
@@ -454,8 +455,8 @@ end
     rgr, rgri = regroup_inv( :( (1,(2,3)) ), :( (1,2,3) ) )
     rgl, rgli = regroup_inv( :( ((1,2),3) ), :( (1,2,3) ) )
     a = w |> aw
-    ar = w |> rgri |> aw |> tensormap(identity, aw) |> rgr
-    al = w |> rgli |> aw |> tensormap(aw, identity) |> rgl
+    ar = w |> rgri |> aw |> TENSORMAP(identity, aw) |> rgr
+    al = w |> rgli |> aw |> TENSORMAP(aw, identity) |> rgl
     @test ar == a == al
     
     w = SymbolicSimplex('w', 0)
@@ -541,8 +542,8 @@ end
         a = Linear( ProductSimplex(x, y, z) => 1 )
 
         u = a |> f11 |> shih |> swap |> g11 |> aw
-        v = a |> f21 |> aw |> tensormap(identity,  aw ∘ swap ∘ shih) |> g21
-        w = a |> f31 |> aw |> tensormap(aw ∘ swap ∘ shih, identity) |> g31
+        v = a |> f21 |> aw |> TENSORMAP(identity,  aw ∘ swap ∘ shih) |> g21
+        w = a |> f31 |> aw |> TENSORMAP(aw ∘ swap ∘ shih, identity) |> g31
 
         @test u == v + w
     end
@@ -624,7 +625,7 @@ end
 
     s12 = Surjection(1:2)
     s21 = Surjection([2,1])
-    f4 = tensormap(coprod, coprod) ∘ coprod
+    f4 = TENSORMAP(coprod, coprod) ∘ coprod
     rg = regroup(:(((1,2),(3,4))), :((1,2,3,4)))
 
     y = SymbolicSimplex('y', 4)
