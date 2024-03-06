@@ -10,7 +10,7 @@ interval_length(k::Interval) = last(k)-first(k)+1
 # AbstractSimplex datatype
 #
 
-export AbstractSimplex, d!, d, s!, s, isdegenerate
+export AbstractSimplex, isdegenerate
 
 abstract type AbstractSimplex end
 

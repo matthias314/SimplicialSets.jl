@@ -1,6 +1,6 @@
 using Test, StructEqualHash, LinearCombinations, SimplicialSets
 
-using SimplicialSets: Interval, interval_length
+using SimplicialSets: d, s, Interval, interval_length
 using SimplicialSets.TestHelpers
 
 using LinearCombinations: diff, signed
