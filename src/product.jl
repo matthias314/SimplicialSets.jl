@@ -8,7 +8,44 @@ using Base: @__MODULE__ as @MODULE
 
 import Base: length, iterate, convert
 
-# struct ProductSimplex{T<:Tuple{Vararg{AbstractSimplex}}}
+# struct ProductSimplex{T<:Tuple{Vararg{AbstractSimplex}}} <: AbstractSimplex
+"""
+    ProductSimplex{T<:Tuple{Vararg{AbstractSimplex}}}
+
+    ProductSimplex{T}(t::Tuple)
+    ProductSimplex{T}{t::Tuple; dim::Integer}
+
+    ProductSimplex(t::Tuple [; dim::Integer])
+    ProductSimplex(xs::AbstractSimplex [; dim::Integer])
+
+A type representing an element in the product of simplicial sets. Empty products are allowed.
+The component simplices must all be of the same dimension.
+They may be given as a tuple or as individual arguments.
+
+In the case of the empty product, the keyword argument `dim` is required to determine the
+dimension of the resulting simplex. Otherwise `dim` is optional, but if present, it must be correct.
+
+See also [`components`](@ref).
+
+# Examples
+```jldoctest
+julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
+(x[0,1,2], y[0,1,2])
+
+julia> z = ProductSimplex(x, y)
+(x[0,1,2],y[0,1,2])
+
+julia> w = ProductSimplex(dim = 2)
+()
+
+julia> dim(w)
+2
+
+julia> ProductSimplex(x, y; dim = 1)
+ERROR: dimensions of simplices do not match
+[...]
+```
+"""
 struct ProductSimplex{T<:Tuple} <: AbstractSimplex
     xl::T
     dim::Int
@@ -39,6 +76,11 @@ function show(io::IO, x::ProductSimplex)
     print(io, '(', join(map(repr, components(x)), ','), ')')
 end
 
+"""
+    components(x::ProductSimplex{T}) where T <: Tuple -> T
+
+Return the tuple of component simplices of `x`.
+"""
 components(x::ProductSimplex) = x.xl
 
 length(x::ProductSimplex) = length(components(x))
@@ -99,10 +141,62 @@ end
 using LinearCombinations: _cat
 import LinearCombinations: cat, flatten, _flatten
 
+"""
+    SimplicialSets.cat(x::ProductSimplex...) -> ProductSimplex
+
+Return the product simplex that is the concatenation of the simplices given as arguments.
+
+Note that this is in fact the function `cat` from the package `LinearCombinations`, not from `Base`.
+If one wants to use the short form, then one needs to import the function via `using` or `import`.
+
+See also [`SimplicialSets.flatten`](@ref).
+
+# Example
+```jldoctest
+julia> using SimplicialSets: cat   # or: using LinearCombinations: cat
+
+julia> u = ProductSimplex(SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2))
+(x[0,1],y[0,1])
+
+julia> v = ProductSimplex(SymbolicSimplex(:z, 2), SymbolicSimplex(:w, 2))
+(z[0,1],w[0,1])
+
+julia> cat(u, v)
+(x[0,1],y[0,1],z[0,1],w[0,1])
+```
+"""
 cat(x::ProductSimplex...) = ProductSimplex(_cat(x...); dim = dim(x[1]))
 
 _flatten(x::ProductSimplex) = _cat(map(_flatten, components(x))...)
 
+"""
+    SimplicialSets.flatten(x::ProductSimplex) -> ProductSimplex
+
+Return the product simplex that is obtained by recursively flattening all product simplices
+appearing within `x`.
+
+Note that this is in fact the function `flatten` from the package `LinearCombinations`, not from `Base`.
+If one wants to use the short form, then one needs to import the function via `using` or `import`.
+
+See also [`SimplicialSets.cat`](@ref).
+
+# Examples
+```jldoctest
+julia> using SimplicialSets: flatten   # or: using LinearCombinations: flatten
+
+julia> u = ProductSimplex(SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2))
+(x[0,1],y[0,1])
+
+julia> v = ProductSimplex(SymbolicSimplex(:z, 2), SymbolicSimplex(:w, 2))
+(z[0,1],w[0,1])
+
+julia> flatten(ProductSimplex(u, v))
+(x[0,1],y[0,1],z[0,1],w[0,1])
+
+julia> flatten(ProductSimplex(ProductSimplex(u, v), u))
+(x[0,1],y[0,1],z[0,1],w[0,1],x[0,1],y[0,1])
+```
+"""
 flatten(x::ProductSimplex) = ProductSimplex(_flatten(x); dim = dim(x))
 
 #

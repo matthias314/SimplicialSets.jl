@@ -6,6 +6,15 @@ export BarSimplex
 
 import Base: *, /, ^, one, isone, inv
 
+"""
+    BarSimplex{T} <: AbstractSimplex
+
+A type representing simplices in a simplicial bar construction. If `T`
+is a subtype of `AbstractSimplex`, then it is assumed to be a simplicial group;
+otherwise `T` is assumed to be a discrete group.
+
+Iterating over a `BarSimplex` means iterating over its components.
+"""
 struct BarSimplex{T} <: AbstractSimplex
     g::Vector{T}
 end
@@ -32,6 +41,11 @@ show(io::IO, x::BarSimplex) = print(io, '[', join(x.g, ','), ']')
 
 copy(x::BarSimplex{T}) where T = BarSimplex{T}(copy(x.g))
 
+"""
+    length(x::BarSimplex) -> Int
+
+The length of a `BarSimplex` is the number of its components.
+"""
 length(x::BarSimplex) = length(x.g)
 
 iterate(x::BarSimplex, state...) = iterate(x.g, state...)
@@ -40,21 +54,54 @@ dim(x::BarSimplex) = length(x)
 
 # note: multiplication of bar simplices only makes sense for commutative groups
 
+"""
+    one(x::BarSimplex{T}, n::Integer = dim(x)) where T -> BarSimplex{T}
+
+Return the identity element in the group of `n`-simplices
+in the simplicial bar construction containing `x`.
+Here `T` is assumed to be a commutative (simplicial) group.
+"""
 one(x::BarSimplex, n::Integer = dim(x)) = one(typeof(x), n)
 
 isone(x::BarSimplex) = all(isone, x.g)
 
+"""
+    inv(x::BarSimplex{T}) where T -> BarSimplex{T}
+
+Return the inverse element of `x` in the group of `n`-simplices in the simplicial
+bar construction containing that simplex.
+Here `T` is assumed to be a commutative (simplicial) group.
+"""
 inv(x::BarSimplex{T}) where T = BarSimplex(inv.(x.g))
 
+"""
+    *(x::BarSimplex{T}...) where T -> BarSimplex{T}
+
+Return the product of the given simplices, which must all have the same dimension.
+Here `T` is assumed to be a commutative (simplicial) group.
+"""
 function *(x::BarSimplex{T}, ys::BarSimplex{T}...) where T
     @boundscheck all(==(dim(x)) ∘ dim, ys) || error("illegal arguments")
     BarSimplex(.*(x.g, map(y -> y.g, ys)...))
 end
 
+"""
+    ^(x::BarSimplex{T}, n::Integer) where T -> BarSimplex{T}
+
+Return the `n`-th power of the simplex `x`.
+Here `T` is assumed to be a commutative (simplicial) group.
+"""
 function ^(x::BarSimplex, n::Integer)
     BarSimplex(x.g .^ n)
 end
 
+"""
+    /(x::BarSimplex{T}, y::BarSimplex{T}) where T -> BarSimplex{T}
+
+Return the quotient of the `x` by `y` in the commutative group of `n`-simplices
+in the simplicial bar construction, where `n` is the common dimension of `x` and `y`.
+Here `T` is assumed to be a commutative (simplicial) group.
+"""
 function /(x::BarSimplex{T}, y::BarSimplex{T}) where T
     @boundscheck dim(x) == dim(y) || error("illegal arguments")
     BarSimplex(x.g ./ y.g)

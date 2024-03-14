@@ -8,6 +8,20 @@ export SymbolicSimplex, dim, vertices
 
 const Label = Union{Symbol,Char}
 
+"""
+    SymbolicSimplex{L<:Union{Symbol,Char}} <: AbstractSimplex
+
+    SymbolicSimplex(label, w::AbstractVector{<:Integer})
+    SymbolicSimplex(label, n::Integer)
+
+This type represents "symbolic simplices" that are given by a label
+and a weakly increasing sequence of integers enumerating the vertices.
+Such a simplex is degenerate if an integer is repeated.
+
+The label can be of type `Symbol` or `Char`. The vertices must be between `0` and `31`,
+and the dimension cannot be larger than `24`. If an integer `n`i s passed as the second
+to the constructor, then the vertices are `0:n`.
+"""
 struct SymbolicSimplex{L<:Label} <: AbstractSimplex
     label::L
     dim::Int
@@ -56,6 +70,11 @@ function Base.:(==)(x::SymbolicSimplex, y::SymbolicSimplex)
     x.dim == y.dim && x.v == y.v
 end
 
+"""
+    vertices(x::SymbolicSimplex) -> Vector{Int}
+
+Return the vertices of `x` as a vector.
+"""
 function vertices(x::SymbolicSimplex)
     d = x.v
     m = dim(x)+1

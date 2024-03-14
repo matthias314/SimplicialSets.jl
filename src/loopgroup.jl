@@ -37,6 +37,30 @@ areinverse(u::LoopGroupGenerator{T}, v::LoopGroupGenerator{T}) where T = u.gen =
 
 export LoopGroupSimplex, twf_loop
 
+"""
+    LoopGroupSimplex{T<:AbstractSimplex} <: AbstractSimplex
+
+    LoopGroupSimplex(x::T) where T <: AbstractSimplex
+
+This type represents simplices in Kan loop groups.
+
+The constructor returns the simplex in the loop group determined by
+the simplex `x`, which must be of strictly positive dimension.
+
+# Examples
+```jldoctest
+julia> using SimplicialSets: s, d
+
+julia> x = SymbolicSimplex(:x, 2); y = LoopGroupSimplex(x)
+⟨x[0,1,2]⟩
+
+julia> d(y, 1), d(y, 0)
+(⟨x[0,1]⟩, ⟨x[1,2]⁻¹,x[0,2]⟩)
+
+julia> LoopGroupSimplex(s(x, 0))
+⟨⟩
+```
+"""
 struct LoopGroupSimplex{T<:AbstractSimplex} <: AbstractSimplex
     gens::Vector{LoopGroupGenerator{T}}
     dim::Int
@@ -120,6 +144,11 @@ function s(g::LoopGroupSimplex, k::Integer)
     LoopGroupSimplex(map(u -> @inbounds(s(u, k+1)), g.gens), n+1)
 end
 
+"""
+    Base.inv(g::L) where L <: LoopGroupSimplex -> L
+
+Return the inverse of the simplex `g` in the loop group.
+"""
 function inv(g::LoopGroupSimplex)
     gens = similar(g.gens)
     for (k, u) in enumerate(g.gens)
@@ -128,6 +157,12 @@ function inv(g::LoopGroupSimplex)
     LoopGroupSimplex(gens, g.dim)
 end
 
+"""
+    mul!(g::L, hs::L...) where L <: LoopGroupSimplex
+
+Multiply the simplex `g` from the right by the simplices given as other arguments in-place
+and return `g`.
+"""
 function mul!(g::LoopGroupSimplex{T}, hs::LoopGroupSimplex{T}...) where T <: AbstractSimplex
     all(==(dim(g)) ∘ dim, hs) || error("illegal arguments")
     sizehint!(g.gens, length(g)+sum(length, hs; init = 0))
@@ -137,6 +172,12 @@ function mul!(g::LoopGroupSimplex{T}, hs::LoopGroupSimplex{T}...) where T <: Abs
     g
 end
 
+"""
+    *(g::L...) where L <: LoopGroupSimplex -> L
+
+Multiply the given simplices in the loop group. At least one simplex must be given, and they
+must all have the same dimension.
+"""
 *(g::LoopGroupSimplex{T}, hs::LoopGroupSimplex{T}...) where T <: AbstractSimplex = mul!(copy(g), hs...)
 
 # twisting function

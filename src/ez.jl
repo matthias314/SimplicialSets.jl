@@ -80,6 +80,47 @@ ez_term_type(f) = return_type(f)
 ez_term_type(f, T) = return_type(f, T)
 ez_term_type(f, T, U...) = _ez_term_type(f, ez_term_type(f, T), U...)
 
+"""
+    ez(x::AbstractSimplex...) -> ProductSimplex
+
+    ez(AbstractTensor{T}) where T <: Tuple{Vararg{AbstractSimplex}} -> ProductSimplex{T}
+
+Return the image of the given simplices under the Eilenberg-Zilber or shuffle map.
+The first version is multilinear in the simplices and the second one linear in the
+tensor argument. Any number of simplices is allowed, including zero.
+
+This function supports the keyword arguments `coefftype`, `addto`, `coeff`,
+`sizehint` and `is_filtered` as described for the macro `@linear`.
+
+See also [`aw`](@ref), [`shih`](@ref).
+
+# Examples
+```jldoctest
+julia> x, y = SymbolicSimplex(:x, 1), SymbolicSimplex(:y, 2)
+(x[0,1], y[0,1,2])
+
+julia> a = ez(x, y)
+(x[0,1,1,1],y[0,0,1,2])-(x[0,0,1,1],y[0,1,1,2])+(x[0,0,0,1],y[0,1,2,2])
+
+julia> ez(Tensor(x, y); addto = a, coeff = -1)
+0
+
+julia> z = SymbolicSimplex(:z, 0)
+z[0]
+
+julia> ez(x, y, z)
+-(x[0,0,1,1],y[0,1,1,2],z[0,0,0,0])+(x[0,0,0,1],y[0,1,2,2],z[0,0,0,0])+(x[0,1,1,1],y[0,0,1,2],z[0,0,0,0])
+
+julia> ez(x, y, z) == ez(ez(x, y), z)
+false
+
+julia> ez(x)
+(x[0,1])
+
+julia> ez(Tensor())
+()
+```
+"""
 @linear_kw function ez(xs::AbstractSimplex...;
         f = ez_prod,
         coefftype = Int,
@@ -127,6 +168,37 @@ end
     end
 end
 
+"""
+    aw(x::ProductSimplex{T}) where T <: Tuple{Vararg{AbstractSimplex}} -> Linear{Tensor{T}}
+
+Return the image of the given product simplex under the Alexander-Whitney map.
+The product simplex may have any number of components, including zero. The number
+of components in the resulting tensor product is the same as the number of
+components of the product simplex.
+
+This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`
+and `is_filtered` as described for the macro `@linear`.
+
+See also [`coprod`](@ref), [`ez`](@ref), [`shih`](@ref).
+
+# Examples
+```jldoctest
+julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
+(x[0,1,2], y[0,1,2])
+
+julia> aw(ProductSimplex(x, y))
+x[0]⊗y[0,1,2]+x[0,1,2]⊗y[2]+x[0,1]⊗y[1,2]
+
+julia> z = SymbolicSimplex(:z, 2); aw(ProductSimplex(x, y, z))
+x[0,1]⊗y[1]⊗z[1,2]+x[0,1,2]⊗y[2]⊗z[2]+x[0,1]⊗y[1,2]⊗z[2]+x[0]⊗y[0]⊗z[0,1,2]+x[0]⊗y[0,1]⊗z[1,2]+x[0]⊗y[0,1,2]⊗z[2]
+
+julia> aw(ProductSimplex(x))
+x[0,1,2]
+
+julia> aw(ProductSimplex(; dim = 0))
+()
+```
+"""
 @linear_kw function aw(x::ProductSimplex{T};
         coefftype = Int,
         addto = zero(Linear{Tensor{T},unval(coefftype)}),
@@ -146,6 +218,35 @@ deg(::typeof(aw)) = Zero()
 # homotopy
 #
 
+"""
+    shih_opp(z::ProductSimplex{T}) where T <: Tuple{AbstractSimplex,AbstractSimplex} -> Linear{T}
+
+Return the image of the product simplex `z` under the *opposite* Eilenberg-MacLane homotopy
+(which is sometimes called the opposite Shih map).
+
+This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`,
+`sizehint` and `is_filtered` as described for the macro `@linear`.
+
+See also [`aw`](@ref), [`ez`](@ref), [`shih_eml`](@ref), [`opposite`](@ref), [`swap(::ProductSimplex)`](@ref).
+
+# Example
+```jldoctest
+julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
+(x[0,1,2], y[0,1,2])
+
+julia> a = Linear(ProductSimplex(x, y) => 1)   # we use `Linear` to get the correct sign from `opposite` below
+(x[0,1,2],y[0,1,2])
+
+julia> shih_opp(a)
+-(x[0,1,1,2],y[1,1,2,2])-(x[0,0,0,2],y[0,1,2,2])+(x[0,0,1,2],y[0,1,1,2])+(x[0,0,1,2],y[1,2,2,2])
+
+julia> shih(a)
+-(x[0,0,0,1],y[0,1,2,2])+(x[0,0,1,2],y[0,2,2,2])-(x[0,1,1,2],y[0,1,2,2])+(x[0,0,1,1],y[0,1,1,2])
+
+julia> shih_opp(opposite(swap(a))) == opposite(swap(shih(a)))
+true
+```
+"""
 @linear_kw function shih_opp(z::ProductSimplex{Tuple{S, T}};
         coefftype = Int,
         addto = zero(Linear{ProductSimplex{Tuple{S,T}},unval(coefftype)}),
@@ -184,6 +285,33 @@ end
 
 deg(::typeof(shih_opp)) = 1
 
+"""
+    shih(z::ProductSimplex{T}) where T <: Tuple{AbstractSimplex,AbstractSimplex} -> Linear{T}
+    shih_eml(z::ProductSimplex{T}) where T <: Tuple{AbstractSimplex,AbstractSimplex} -> Linear{T}
+
+Return the image of the product simplex `z` under the Eilenberg-MacLane homotopy
+(which is sometimes called the Shih map).
+
+This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`,
+`sizehint` and `is_filtered` as described for the macro `@linear`.
+
+See also [`aw`](@ref), [`ez`](@ref), [`shih_opp`](@ref).
+
+# Examples
+```jldoctest
+julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2); z = ProductSimplex(x, y)
+(x[0,1,2],y[0,1,2])
+
+julia> shih(z)
+-(x[0,1,1,2],y[0,1,2,2])+(x[0,0,1,1],y[0,1,1,2])-(x[0,0,0,1],y[0,1,2,2])+(x[0,0,1,2],y[0,2,2,2])
+
+julia> shih(ez(x, y))
+0
+
+julia> shih(ez(x, y)), aw(shih(z)), shih(shih(z))
+(0, 0, 0)
+```
+"""
 @linear_kw function shih_eml(z::ProductSimplex{Tuple{S, T}};
         coefftype = Int,
         addto = zero(Linear{ProductSimplex{Tuple{S,T}},unval(coefftype)}),
@@ -224,6 +352,11 @@ end
 deg(::typeof(shih_eml)) = 1
 
 # setting the default version
+"""
+    const shih = shih_eml
+
+`shih` is a short form for the usual Eilenberg-MacLane homotopy [`shih_eml`](@ref).
+"""
 const shih = shih_eml
 
 #
@@ -261,10 +394,41 @@ end
 
 export diag
 
+"""
+    diag(x::T) where T <: AbstractSimplex -> ProductSimplex{T,T}
+
+Return the image of `x` under the diagonal map from the simplicial set containing `x`
+to the Cartesian product with itself.
+
+See also [`coprod`](@ref).
+"""
 diag(x::AbstractSimplex) = @inbounds ProductSimplex(x, x)
 
 @linear diag
 
 keeps_filtered(::typeof(diag), ::Type) = true
 
+"""
+    coprod(x::T) where T <: AbstractSimplex -> Linear{Tensor{Tuple{T,T}}}
+
+Return the image of the simplex `x` under coproduct (or diagonal map) of the normalized chain complex
+containing `x`.
+
+This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`
+and `is_filtered` as described for the macro `@linear`.
+
+See also [`aw`](@ref), [`diag`](@ref).
+
+# Examples
+```jldoctest
+julia> x = SymbolicSimplex(:x, 2)
+x[0,1,2]
+
+julia> coprod(x)
+x[0]⊗x[0,1,2]+x[0,1,2]⊗x[2]+x[0,1]⊗x[1,2]
+
+julia> coprod(x) == aw(diag(x))
+true
+```
+"""
 coprod(x::AbstractSimplex; kw...) = aw(diag(x); kw...)

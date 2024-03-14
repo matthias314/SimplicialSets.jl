@@ -4,6 +4,29 @@
 
 export Surjection, arity
 
+"""
+    Surjection{K}
+
+    Surjection{K}(u [; check = true]) where K
+    Surjection(u)
+
+A type representing an element of arity `K` in the surjection operad.
+
+The first constructor return the surjection given by `u` TODO. If the optional
+keyword argument is set to `false`, then it is not checked that `u` is indeed a surjection.
+The second constructor is equivalent to the first with `K` set to `maximum(u)`.
+
+See also [`arity`](@ref).
+
+# Examples
+```jldoctest
+julia> Surjection([1,2,3,1])
+Surjection{3}([1, 2, 3, 1])
+
+julia> Surjection(Int[])
+Surjection{0}(Int64[])
+```
+"""
 struct Surjection{K}          # K is the number of labels
     u::Vector{Int}            # the surjection proper
     # u1::Vector{Int}           # previous interval with same label (0 for first occurrence)
@@ -19,6 +42,11 @@ hash(surj::Surjection, h::UInt) = hash(surj.u, h)
 
 deg(surj::Surjection{K}) where K = length(surj.u)-K
 
+"""
+    arity(surj::Surjection{K}) where K -> K
+
+Return the arity of the surjection `surj`.
+"""
 arity(surj::Surjection{K}) where K = K
 
 is_surjection(k, u::AbstractVector{Int}) = extrema(u; init = (1, 0)) == (1, k) && all(Fix2(in, u), 2:k-1)
@@ -51,6 +79,14 @@ end
 
 Surjection(u) = Surjection{maximum(u; init = 0)}(u)
 
+"""
+    diff(surj::Surjection{K}) where K -> Linear{Surjection{K}}
+
+Return the differential (or boundary) of `u` in the surjection operad.
+
+This function is linear and supports the keyword arguments `coefftype`, `addto`,
+`coeff` and `is_filtered` as described for the macro `@linear`.
+"""
 @linear_kw function diff(surj::Surjection{k};
         coefftype = Int,
         addto = zero(Linear{Surjection{k},unval(coefftype)}),

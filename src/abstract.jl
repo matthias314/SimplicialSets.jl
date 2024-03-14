@@ -22,6 +22,13 @@ abstract type AbstractSimplex end
 #     d(:NewSimplex, ::Int)
 #     s(:NewSimplex, ::Int)
 
+"""
+    dim(x::AbstractSimplex) -> Int
+
+Return the dimension of the simplex `x`.
+"""
+function dim end
+
 function d!(x::AbstractSimplex, kk::AbstractVector{<:Integer})
     for k in reverse(kk)
         d!(x, k)
@@ -29,6 +36,16 @@ function d!(x::AbstractSimplex, kk::AbstractVector{<:Integer})
     x
 end
 
+"""
+    d(x::T, k) where T <: AbstractSimplex -> T
+    d(x::T, ks::Integer...) where T <: AbstractSimplex -> T
+
+In the first form, return the `k`-th facet of `x`. In the second form,
+apply `d` repeatedly to `x`, starting with the last element of `ks`.
+
+TODO CHECK
+```
+"""
 @generated function d(x::T, kk) where T <: AbstractSimplex
     if hasmethod(d!, (T, Int))
         :(d!(copy(x), kk))
@@ -98,6 +115,14 @@ function r(x::T, kk) where T <: AbstractSimplex
     y
 end
 
+"""
+    isdegenerate(x::AbstractSimplex, k::Integer) -> Bool
+
+Return `true` if `x` is degenerate at position `k` and `false` otherwise.
+The index `k` must be between `0` and `dim(x)-1`.
+
+A simplex `x` is degenerate at position `k` if `x == s(d(x, k), k)`.
+"""
 function isdegenerate(x::AbstractSimplex, k::Integer)
     @boundscheck if k < 0 || k >= dim(x)
         error("index outside the allowed range 0:$(dim(x)-1)")
@@ -105,13 +130,85 @@ function isdegenerate(x::AbstractSimplex, k::Integer)
     @inbounds x == s(d(x, k), k)
 end
 
+"""
+    isdegenerate(x::AbstractSimplex, k0::Integer, k1::Integer) -> Bool
+
+Return `true` if `x` is degenerate on the interval `k0:k1` and `false` otherwise.
+The indices must satisfy `0 <= k0 <= k1 <= dim(x)`.
+
+A simplex is degenerate on the interval `k0:k1` if it degenerate at some position `k`
+between `k0` and `k1-1`.
+"""
 @propagate_inbounds isdegenerate(x::AbstractSimplex, k0::Integer, k1::Integer) = any(k -> isdegenerate(x, k), k0:k1-1)
+
+"""
+    isdegenerate(x::AbstractSimplex) -> Bool
+
+Return `true` if `x` is degenerate and `false` otherwise.
+"""
 isdegenerate(x::AbstractSimplex) = @inbounds isdegenerate(x, 0, dim(x))
 
+"""
+    LinearCombinations.linear_filter(x::AbstractSimplex) -> Bool
+
+Return `true` if `x` is non-degenerate and `false` otherwise.
+The effect of this is that linear combinations of simplices represent
+elements of the *normalized* chain complex of the corresponding simplicial set.
+
+See also `LinearCombinations.linear_filter`.
+
+# Examples
+```jldoctest
+julia> using LinearCombinations
+
+julia> x = SymbolicSimplex(:x, 2)
+x[0,1,2]
+
+julia> Linear(s(x, 1) => 1)
+0
+```
+"""
 linear_filter(x::AbstractSimplex) = !isdegenerate(x)
 
+"""
+    deg(x::AbstractSimplex) -> Int
+
+Return the degree of `x`, which is defined as its dimension.
+
+See also [`dim`](@ref).
+"""
 deg(x::AbstractSimplex) = dim(x)
 
+"""
+    diff(x::T) where T <: AbstractSimplex -> Linear{T}
+
+Return the differential or boundary of `x` as a linear combination.
+By default, the coefficients are of type `Int`.
+
+This functions supports the keyword arguments `coefftype`, `addto`,
+`coeff` and `is_filtered` as described for `@linear`.
+
+TODO
+
+See `LinearCombinations.@linear`
+
+# Examples
+```jldoctest
+julia> using LinearCombinations; using LinearCombinations: diff
+
+julia> x = SymbolicSimplex(:x, 2)
+x[0,1,2]
+
+julia> a = diff(x)
+x[1,2]-x[0,2]+x[0,1]
+
+julia> b = zero(a); diff(x; addto = b, coeff = 2)
+2*x[1,2]-2*x[0,2]+2*x[0,1]
+
+julia> b
+2*x[1,2]-2*x[0,2]+2*x[0,1]
+```
+"""
 @linear_kw function diff(x::T;
         coefftype = Int,
         addto = zero(Linear{T,unval(coefftype)}),

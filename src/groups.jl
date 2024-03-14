@@ -10,6 +10,33 @@ import Base: *, /, ^, +, -, zero, iszero, one, isone
 # AddToMul
 #
 
+"""
+    AddToMul{T}
+
+A wrapper to turn an additive group structure defined for the type `T`
+into a multiplicative structure.
+
+# Examples
+```jldoctest
+julia> x, y = AddToMul(2), AddToMul(3)
+(2, 3)
+
+julia> x*y
+5
+
+julia> x^2
+4
+
+julia> inv(x)
+-2
+
+julia> x/y
+-1
+
+julia> one(x)
+0
+```
+"""
 struct AddToMul{T}
     x::T
 end
@@ -33,6 +60,35 @@ inv(a::AddToMul) = AddToMul(-a.x)
 # Lattice
 #
 
+"""
+    Lattice{N}
+
+    Lattice(t::NTuple{N,Integer}) -> Lattice{N}
+    Lattice(x::Integer...) -> Lattice
+
+A type representing elements in a lattice (free abelian group) of rank `N`.
+
+# Examples
+```jldoctest
+julia> x, y = Lattice(1, 2, 3), Lattice(0, -1, 5)
+((1, 2, 3), (0, -1, 5))
+
+julia> x+y
+(1, 1, 8)
+
+julia> x+y, x-y
+((1, 1, 8), (1, 3, -2))
+
+julia> 2*x
+(2, 4, 6)
+
+julia> zero(x)
+(0, 0, 0)
+
+julia> length(x)
+3
+```
+"""
 struct Lattice{N}
     v::NTuple{N, Int}
 end
