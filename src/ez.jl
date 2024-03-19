@@ -391,24 +391,36 @@ import Base: *, inv
 
 keeps_filtered(::typeof(inv), ::Type) = true
 
-_mul(addto, coeff, t) = ez(Tensor(t); f = *, addto, coeff)
+"""
+    *(x::AbstractSimplex...) -> Linear{<:AbstractSimplex}
 
-function _mul(addto, coeff, t, a, b...)
-    for (x, c) in a
-        _mul(addto, coeff*c, (t..., x), b...)
-    end
+Return the Pontryagin product of the given simplices, or the product in a dg module structure.
+
+This product is computed from the underlying simplicial product (or group action) `⋅` together
+with the shuffle map `ez`. (The operator `⋅` can also be entered as `\\cdot[TAB]`.)
+
+See also [`ez`](@ref), [`⋅`](@ref).
+
+# Examples
+```jldoctest
+julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
+(x[0,1,2], y[0,1,2])
+
+julia> xx, yy = LoopGroupSimplex(x), LoopGroupSimplex(y)
+(⟨x[0,1,2]⟩, ⟨y[0,1,2]⟩)
+
+julia> xx ⋅ yy
+⟨x[0,1,2],y[0,1,2]⟩
+
+julia> xx * yy
+⟨x[0,1,2,2],y[0,1,1,2]⟩-⟨x[0,1,1,2],y[0,1,2,2]⟩
+```
+"""
+function *(x::AbstractSimplex, xs::AbstractSimplex...; kw...)
+    ez(x, xs...; f = ⋅, kw...)
 end
 
-function *(a::AbstractLinear{<:AbstractSimplex}...)
-# TODO: add addto & coeff
-    R = promote_type(map(coefftype, a)...)
-    T = return_type(*, map(termtype, a)...)
-    addto = zero(Linear{T,R})
-    l = prod(map(length, a))
-    l == 0 && return addto
-    _mul(addto, ONE, (), a...)
-    addto
-end
+# TODO: make kw known
 
 #
 # diagonal map and coproduct
