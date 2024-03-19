@@ -11,7 +11,7 @@ export OppositeSimplex, opposite
 that `i`-th face operator corresponds to the `(n-i)`-th face operator
 for `x`, and likewise for degeneracy operators.
 
-The functions `*`, `\\`, `inv` and `one` with argument(s) of type
+The functions `⋄`, `/`, `inv` and `one` with argument(s) of type
 `OppositeSimplex` work on the underlying simplices.
 
 Note that the linear extension of `OppositeSimplex` would not be a chain map
@@ -59,8 +59,12 @@ dim(y::OppositeSimplex) = dim(y.x)
 d(y::OppositeSimplex, k::Integer) = OppositeSimplex(d(y.x, dim(y)-k))
 s(y::OppositeSimplex, k::Integer) = OppositeSimplex(s(y.x, dim(y)-k))
 
-*(ys::OppositeSimplex...) = OppositeSimplex(prod(map(y -> y.x, ys)))
-/(y::OppositeSimplex, z::OppositeSimplex) = OppositeSimplex(y.x/z.x)
+function ⋄(y::OppositeSimplex, ys::OppositeSimplex...)
+    ys = (y, ys...)
+    OppositeSimplex(⋄(map(y -> y.x, ys)...))
+end
+
+/(y::OppositeSimplex, z::OppositeSimplex) = OppositeSimplex(y.x/z.x)  # TODO: keep?
 inv(y::OppositeSimplex) = OppositeSimplex(inv(y.x))
 one(::Type{OppositeSimplex{T}}, n...) where T = OppositeSimplex(one(T, n...))
 one(y::OppositeSimplex, n...) = OppositeSimplex(one(y.x, n...))

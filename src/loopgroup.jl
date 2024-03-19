@@ -241,7 +241,7 @@ function mul!(g::LoopGroupSimplex{T}, hs::LoopGroupSimplex{T}...) where T <: Abs
 end
 
 """
-    *(g::L...) where L <: LoopGroupSimplex -> L
+    ⋄(g::L...) where L <: LoopGroupSimplex -> L
 
 Multiply the given simplices in the loop group. At least one simplex must be given, and they
 must all have the same dimension.
@@ -260,7 +260,7 @@ julia> g*h
 ⟨x[0,1,2],y[0,1,2]⟩
 ```
 """
-*(g::LoopGroupSimplex{T}, hs::LoopGroupSimplex{T}...) where T <: AbstractSimplex = mul!(copy(g), hs...)
+⋄(g::LoopGroupSimplex{T}, hs::LoopGroupSimplex{T}...) where T <: AbstractSimplex = mul!(copy(g), hs...)
 
 # twisting function
 twf_loop(x::AbstractSimplex) = LoopGroupSimplex(x)

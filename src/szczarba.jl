@@ -28,7 +28,7 @@ function szczarba(x::AbstractSimplex, twf, ii::Tuple)
     g = szczarba(inv(twf(x)), ii, 0)
     for k in 1:n-1
         x = d(x, 0)
-        g *= szczarba(inv(twf(x)), ii, k)
+        g = g ⋄ szczarba(inv(twf(x)), ii, k)
     end
     g
 end

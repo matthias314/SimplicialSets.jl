@@ -275,6 +275,36 @@ diff(::AbstractSimplex)
     addto
 end
 
+export ⋄
+
+"""
+    ⋄(x::AbstractSimplex) -> AbstractSimplex
+
+Return the simplicial product (or group action) of the given simplices.
+
+The associated Pontryagin product (based on the shuffle map) is given by `*`.
+
+The diamond operator `⋄` can also be entered as `\\diamond[TAB]`.
+
+See also [`*`(::AbstractSimplex...)](@ref).
+
+# Examples
+```jldoctest
+julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
+(x[0,1,2], y[0,1,2])
+
+julia> xx, yy = LoopGroupSimplex(x), LoopGroupSimplex(y)
+(⟨x[0,1,2]⟩, ⟨y[0,1,2]⟩)
+
+julia> xx ⋄ yy
+⟨x[0,1,2],y[0,1,2]⟩
+
+julia> xx * yy
+⟨x[0,1,2,2],y[0,1,1,2]⟩-⟨x[0,1,1,2],y[0,1,2,2]⟩
+```
+"""
+function ⋄ end
+
 function ^(g::AbstractSimplex, n::Integer)
     if n >= 32
         # square-and-multiply

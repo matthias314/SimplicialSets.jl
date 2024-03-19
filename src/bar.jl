@@ -128,15 +128,19 @@ Here `T` is assumed to be a commutative (simplicial) group.
 inv(x::BarSimplex) = BarSimplex(inv.(x.g))
 
 """
-    *(x::BarSimplex{T}...) where T -> BarSimplex{T}
+    ⋄(x::BarSimplex{T}...) where T -> BarSimplex{T}
 
 Return the product of the given simplices, which must all have the same dimension.
-Here `T` is assumed to be a commutative (simplicial) group.
+Here `T` is assumed to be a commutative (possibly simplicial) group.
 """
-function *(x::BarSimplex{T}, xs::BarSimplex{T}...) where T
+function ⋄(x::BarSimplex{T}, xs::BarSimplex{T}...) where T
     xs = (x, xs...)
     @boundscheck allequal(map(dim, xs)) || error("illegal arguments")
-    BarSimplex(map(*, map(x -> x.g, xs)...))
+    if T <: AbstractSimplex
+        BarSimplex(map(⋄, map(x -> x.g, xs)...))
+    else
+        BarSimplex(map(*, map(x -> x.g, xs)...))
+    end
 end
 
 """
@@ -225,7 +229,7 @@ function d(x::BarSimplex{T}, k::Integer) where T <: AbstractSimplex
     @inbounds gg = T[if i < k
             g[i]
         elseif i == k
-            g[i]*d(g[i+1], 0)
+            g[i] ⋄ d(g[i+1], 0)
         else
             d(g[i+1], i-k)
         end
