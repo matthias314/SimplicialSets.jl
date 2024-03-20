@@ -80,9 +80,10 @@ inv(x::BarSimplex{T}) where T = BarSimplex(inv.(x.g))
 Return the product of the given simplices, which must all have the same dimension.
 Here `T` is assumed to be a commutative (simplicial) group.
 """
-function *(x::BarSimplex{T}, ys::BarSimplex{T}...) where T
-    @boundscheck all(==(dim(x)) ∘ dim, ys) || error("illegal arguments")
-    BarSimplex(.*(x.g, map(y -> y.g, ys)...))
+function *(x::BarSimplex{T}, xs::BarSimplex{T}...) where T
+    xs = (x, xs...)
+    @boundscheck allequal(map(dim, xs)) || error("illegal arguments")
+    BarSimplex(map(*, map(x -> x.g, xs)...))
 end
 
 """
