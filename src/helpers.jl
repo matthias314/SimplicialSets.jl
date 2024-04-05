@@ -1,5 +1,7 @@
 module TestHelpers
 
+using Test
+
 using ..SimplicialSets
 using StructEqualHash: @struct_equal_hash
 using LinearCombinations
@@ -43,24 +45,55 @@ undo_basic(x::AbstractTensor) = Tensor((undo_basic(y) for y in x)...)
 @linear undo_basic
 
 #
+# twisting function
+#
+
+export test_twf
+
+"""
+    test_twf(f, x::AbstractSimplex)
+
+Test that `f` satisfies the defining identites for a twisting functions for the argument `x`.
+"""
+function test_twf(f, x::AbstractSimplex)
+    n = dim(x)
+    y = f(s(x, 0))
+    @test dim(y) == n && isone(y)
+    if n == 0
+        @test_throws Exception f(x)
+    else
+        y = f(x)
+        @test dim(y) == n-1
+        for k in 0:n-1
+            @test s(y, k) == f(s(x, k+1))
+            n == 1 && continue
+            if k == 0
+                @test d(y, k) == inv(f(d(x, 0))) ⋄ f(d(x, 1))
+            else
+                @test d(y, k) == f(d(x, k+1))
+            end
+        end
+    end
+end
+
+#
 # twisting cochain
 #
 
-export check_twc
+export test_twc
 
 """
-    check_twc(f, a)
+    test_twc(f, a)
 
-Check that `f` satisfies the twisting cochain identity for the argument `a`,
+Test that `f` satisfies the twisting cochain identity for the argument `a`,
 ```
 diff(f(a)) + f(diff(a)) == coprod(a) |> Tensor(f, f) |> TensorSplat(*)
 ```
-The returned value is the left-hand side minus the right-hand side.
 """
-function check_twc(f, a)
+function test_twc(f, a)
     b1 = diff(f(a)) + f(diff(a))
     b2 = coprod(a) |> Tensor(f, f) |> TensorSplat(*)
-    b1-b2
+    @test b1 == b2
 end
 
 end # module TestHelpers
