@@ -59,7 +59,7 @@ dim(y::OppositeSimplex) = dim(y.x)
 d(y::OppositeSimplex, k::Integer) = OppositeSimplex(d(y.x, dim(y)-k))
 s(y::OppositeSimplex, k::Integer) = OppositeSimplex(s(y.x, dim(y)-k))
 
-*(ys::OppositeSimplex...) = OppositeSimplex(*((y.x for y in ys)...))
+*(ys::OppositeSimplex...) = OppositeSimplex(prod(map(y -> y.x, ys)))
 /(y::OppositeSimplex, z::OppositeSimplex) = OppositeSimplex(y.x/z.x)
 inv(y::OppositeSimplex) = OppositeSimplex(inv(y.x))
 one(::Type{OppositeSimplex{T}}, n...) where T = OppositeSimplex(one(T, n...))
@@ -84,7 +84,7 @@ See also
 """
 opposite(x::AbstractSimplex) = OppositeSimplex(x)
 opposite(y::OppositeSimplex) = y.x
-opposite(x::ProductSimplex) = ProductSimplex((opposite(y) for y in x)...)
+opposite(x::ProductSimplex) = ProductSimplex(map(opposite, Tuple(x)))
 
 """
     opposite(t::AbstractTensor) -> Tensor
@@ -95,12 +95,13 @@ See also
 [`opposite(::AbstractSimplex)`](@ref),
 [`opposite(::AbstractLinear{T,R} where {T,R})`](@ref).
 """
-opposite(x::AbstractTensor) = Tensor((opposite(y) for y in x)...)
+opposite(x::AbstractTensor) = Tensor(map(opposite, Tuple(x)))
 
 q2(x::AbstractSimplex) = ifelse((dim(x)+1) & 2 == 0, 0, 1)
 # this is 0 if dim(x) == 0 or 3 mod 4, and 1 if dim(x) == 1 or 2 mod 4
 
 q2(t::AbstractTensor) = sum0(map(q2, Tuple(t)))
+
 """
     opposite(a::AbstractLinear{T,R}) -> Linear
 
