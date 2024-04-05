@@ -21,7 +21,7 @@ end
 
 SuspensionSimplex(x::T, p::Int, q::Int = dim(x)+1-p) where T <: AbstractSimplex = SuspensionSimplex(x, IntervalSimplex(p, q))
 
-SuspensionSimplex(x::ProductSimplex{Tuple{T, IntervalSimplex}}) where T <: AbstractSimplex = SuspensionSimplex(components(x)...)
+SuspensionSimplex(x::ProductSimplex{Tuple{T, IntervalSimplex}}) where T <: AbstractSimplex = SuspensionSimplex(Tuple(x)...)
 
 function show(io::IO, x::SuspensionSimplex)
     print(io, isabovevertex(x) ? "Σ($(x.i))" : "Σ($(x.x),$(x.i))")

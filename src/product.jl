@@ -2,7 +2,7 @@
 # ProductSimplex datatype
 #
 
-export ProductSimplex, components
+export ProductSimplex
 
 using Base: @__MODULE__ as @MODULE
 
@@ -25,7 +25,7 @@ They may be given as a tuple or as individual arguments.
 In the case of the empty product, the keyword argument `dim` is required to determine the
 dimension of the resulting simplex. Otherwise `dim` is optional, but if present, it must be correct.
 
-See also [`components`](@ref).
+See also [`Tuple(x::ProductSimplex)`](@ref).
 
 # Examples
 ```jldoctest
@@ -73,29 +73,29 @@ end
 @propagate_inbounds ProductSimplex(x::AbstractSimplex...; kw...) = ProductSimplex(x; kw...)
 
 function show(io::IO, x::ProductSimplex)
-    print(io, '(', join(map(repr, components(x)), ','), ')')
+    print(io, '(', join(map(repr, Tuple(x)), ','), ')')
 end
 
 """
-    components(x::ProductSimplex{T}) where T <: Tuple -> T
+    Tuple(x::ProductSimplex{T}) where T <: Tuple -> T
 
 Return the tuple of component simplices of `x`.
 """
-components(x::ProductSimplex) = x.xl
+Base.Tuple(x::ProductSimplex) = x.xl
 
-length(x::ProductSimplex) = length(components(x))
+length(x::ProductSimplex) = length(Tuple(x))
 
 firstindex(x::ProductSimplex) = 1
 lastindex(x::ProductSimplex) = length(x)
 
-iterate(x::ProductSimplex, state...) = iterate(components(x), state...)
+iterate(x::ProductSimplex, state...) = iterate(Tuple(x), state...)
 
-@propagate_inbounds getindex(x::ProductSimplex, k) = components(x)[k]
+@propagate_inbounds getindex(x::ProductSimplex, k) = Tuple(x)[k]
 
 # copy(x::ProductSimplex) = ProductSimplex(copy(x.xl))
 copy(x::ProductSimplex) = x
 
-convert(::Type{P}, x::ProductSimplex) where P <: ProductSimplex = @inbounds P(components(x); dim = dim(x))
+convert(::Type{P}, x::ProductSimplex) where P <: ProductSimplex = @inbounds P(Tuple(x); dim = dim(x))
 
 @struct_equal_hash ProductSimplex{T} where T
 # @struct_equal_hash ProductSimplex
@@ -133,7 +133,7 @@ end
     @boundscheck if k < 0 || k >= dim(x)
         error("index outside the allowed range 0:$(dim(x))")
     end
-    @inbounds all(y -> isdegenerate(y, k), components(x))
+    @inbounds all(y -> isdegenerate(y, k), Tuple(x))
 end
 
 # concatenating and flattening ProductSimplex
@@ -167,7 +167,7 @@ julia> cat(u, v)
 """
 cat(x::ProductSimplex...) = ProductSimplex(_cat(x...); dim = dim(x[1]))
 
-_flatten(x::ProductSimplex) = _cat(map(_flatten, components(x))...)
+_flatten(x::ProductSimplex) = _cat(map(_flatten, Tuple(x))...)
 
 """
     SimplicialSets.flatten(x::ProductSimplex) -> ProductSimplex

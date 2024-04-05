@@ -205,7 +205,7 @@ julia> aw(ProductSimplex(; dim = 0))
         coeff = ONE,
         is_filtered = false) where T <: Tuple{Vararg{AbstractSimplex}}
     if !iszero(coeff) && (is_filtered || !isdegenerate(x))
-        _aw(addto, coeff, components(x))
+        _aw(addto, coeff, Tuple(x))
     end
     addto
 end
@@ -258,7 +258,7 @@ true
 
     n = dim(z)
     sizehint && sizehint!(addto, length(addto)+(1<<(n+1))-n-2)
-    x, y = components(z)
+    x, y = Tuple(z)
 
     # stack for foreach_shuffle_simplex
     xv = Vector{S}(undef, n+1)
@@ -323,7 +323,7 @@ julia> shih(ez(x, y)), aw(shih(z)), shih(shih(z))
 
     n = dim(z)
     sizehint && sizehint!(addto, length(addto)+(1<<(n+1))-n-2)
-    x, y = components(z)
+    x, y = Tuple(z)
 
     # stack for foreach_shuffle_simplex
     xv = Vector{S}(undef, n)
