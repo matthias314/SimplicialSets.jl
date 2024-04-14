@@ -2,6 +2,17 @@
 # AbstractProductSimplex
 #
 
+export AbstractProductSimplex
+
+"""
+    AbstractProductSimplex{T<:Tuple} <: AbstractSimplex
+
+The supertype of product simplices. Besides the most important subtype `ProductSimplex`
+there are also `LeftTwistedProductSimplex` and `RightTwistedProductSimplex`.
+
+See also [`ProductSimplex`](@ref),
+[`LeftTwistedProductSimplex`](@ref), [`RightTwistedProductSimplex`](@ref).
+"""
 abstract type AbstractProductSimplex{T<:Tuple} <: AbstractSimplex end
 
 """
