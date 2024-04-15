@@ -146,10 +146,11 @@ import LinearCombinations: cat, flatten, _flatten
 
 Return the product simplex that is the concatenation of the simplices given as arguments.
 
-Note that this is in fact the function `cat` from the package `LinearCombinations`, not from `Base`.
-If one wants to use the short form, then one needs to import the function via `using` or `import`.
+This function is linear. Also note that it is overloaded from the package `LinearCombinations`,
+not from `Base`. If one wants to use the short form `cat`, then one needs to import the function
+via `using` or `import`.
 
-See also [`SimplicialSets.flatten`](@ref).
+See also [`swap`](@ref), [`flatten`](@ref).
 
 # Example
 ```jldoctest
@@ -175,10 +176,9 @@ _flatten(x::ProductSimplex) = _cat(map(_flatten, Tuple(x))...)
 Return the product simplex that is obtained by recursively flattening all product simplices
 appearing within `x`.
 
-Note that this is in fact the function `flatten` from the package `LinearCombinations`, not from `Base`.
-If one wants to use the short form, then one needs to import the function via `using` or `import`.
+This function is linear. Also note that it is overloaded from the package `LinearCombinations`.
 
-See also [`SimplicialSets.cat`](@ref).
+See also [`swap`](@ref), [`SimplicialSets.cat`](@ref).
 
 # Examples
 ```jldoctest
@@ -209,6 +209,17 @@ import LinearCombinations: _length, _getindex
 _length(::Type{<:ProductSimplex{T}}) where T <: Tuple = _length(T)
 
 @propagate_inbounds _getindex(::Type{T}, i) where T <: ProductSimplex = _getindex(T.parameters[1], i)
+
+"""
+    swap(z::ProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex} -> ProductSimplex{Tuple{T,S}}
+
+Swap the two components of the `ProductSimplex` `z` and return the resulting `ProductSimplex`.
+
+This function is linear. Also note that it is overloaded from the package `LinearCombinations`.
+
+See also [`flatten`](@ref), [`SimplicialSets.cat`](@ref).
+"""
+swap(::ProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex}
 
 function (rg::Regroup{A})(x::T) where {A,T<:ProductSimplex}
     regroup_check_arg(ProductSimplex, typeof(A), T) ||

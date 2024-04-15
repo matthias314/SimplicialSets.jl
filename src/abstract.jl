@@ -121,7 +121,7 @@ end
 Return `true` if `x` is degenerate at position `k` and `false` otherwise.
 The index `k` must be between `0` and `dim(x)-1`.
 
-A simplex `x` is degenerate at position `k` if `x == s(d(x, k), k)`.
+A simplex `x` of positive dimension is degenerate at position `k` if `x == s(d(x, k), k)`.
 """
 function isdegenerate(x::AbstractSimplex, k::Integer)
     @boundscheck if k < 0 || k >= dim(x)
@@ -159,7 +159,7 @@ See also `LinearCombinations.linear_filter`.
 
 # Examples
 ```jldoctest
-julia> using LinearCombinations
+julia> using LinearCombinations; using SimplicialSets: s
 
 julia> x = SymbolicSimplex(:x, 2)
 x[0,1,2]
@@ -190,7 +190,7 @@ This functions supports the keyword arguments `coefftype`, `addto`,
 
 TODO
 
-See `LinearCombinations.@linear`
+See also `LinearCombinations.@linear`.
 
 # Examples
 ```jldoctest

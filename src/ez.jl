@@ -92,7 +92,7 @@ tensor argument. Any number of simplices is allowed, including zero.
 This function supports the keyword arguments `coefftype`, `addto`, `coeff`,
 `sizehint` and `is_filtered` as described for the macro `@linear`.
 
-See also [`aw`](@ref), [`shih`](@ref).
+See also [`aw`](@ref), [`shih`](@ref), `LinearCombinations.@linear`.
 
 # Examples
 ```jldoctest
@@ -179,7 +179,7 @@ components of the product simplex.
 This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`
 and `is_filtered` as described for the macro `@linear`.
 
-See also [`coprod`](@ref), [`ez`](@ref), [`shih`](@ref).
+See also [`coprod`](@ref), [`ez`](@ref), [`shih`](@ref), `LinearCombinations.@linear`.
 
 # Examples
 ```jldoctest
@@ -227,7 +227,8 @@ Return the image of the product simplex `z` under the *opposite* Eilenberg-MacLa
 This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`,
 `sizehint` and `is_filtered` as described for the macro `@linear`.
 
-See also [`aw`](@ref), [`ez`](@ref), [`shih_eml`](@ref), [`opposite`](@ref), [`swap(::ProductSimplex)`](@ref).
+See also [`aw`](@ref), [`ez`](@ref), [`shih_eml`](@ref), [`opposite`](@ref), [`swap`](@ref),
+`LinearCombinations.@linear`.
 
 # Example
 ```jldoctest
@@ -295,7 +296,7 @@ Return the image of the product simplex `z` under the Eilenberg-MacLane homotopy
 This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`,
 `sizehint` and `is_filtered` as described for the macro `@linear`.
 
-See also [`aw`](@ref), [`ez`](@ref), [`shih_opp`](@ref).
+See also [`aw`](@ref), [`ez`](@ref), [`shih_opp`](@ref), `LinearCombinations.@linear`.
 
 # Examples
 ```jldoctest
@@ -417,7 +418,7 @@ containing `x`.
 This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`
 and `is_filtered` as described for the macro `@linear`.
 
-See also [`aw`](@ref), [`diag`](@ref).
+See also [`aw`](@ref), [`diag`](@ref), `LinearCombinations.@linear`.
 
 # Examples
 ```jldoctest

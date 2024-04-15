@@ -18,9 +18,9 @@ This type represents "symbolic simplices" that are given by a label
 and a weakly increasing sequence of integers enumerating the vertices.
 Such a simplex is degenerate if an integer is repeated.
 
-The label can be of type `Symbol` or `Char`. The vertices must be between `0` and `31`,
-and the dimension cannot be larger than `24`. If an integer `n`i s passed as the second
-to the constructor, then the vertices are `0:n`.
+The label can be of type `Symbol` or `Char`. The vertex numbers must be between `0`
+and `31`, and the dimension cannot be larger than `24`. If an integer `n` is passed
+as a second argument to the constructor, then the vertices are `0:n`.
 """
 struct SymbolicSimplex{L<:Label} <: AbstractSimplex
     label::L

@@ -1,7 +1,7 @@
 """
-    SimplicialSets
+    $(@__MODULE__)
 
-This packages provides functions to work with simplicial sets.
+This package provides functions to work with simplicial sets.
 Various kinds of simplicial sets are supported, including symbolic simplices,
 products, bar constructions and Kan loop groups.
 The Eilenberg-Zilber maps and interval cut operations are also implemented.

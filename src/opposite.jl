@@ -20,7 +20,7 @@ to the opposite simplicial set. For this purpose there is the function `opposite
 
 See also [`opposite`](@ref).
 
-# Example
+# Examples
 ```jldoctest
 julia> using SimplicialSets: d, s
 
@@ -80,7 +80,7 @@ Return an "interpreted version" of the opposite simplex of `x`:
 See also
 [`OppositeSimplex`](@ref),
 [`opposite(::AbstractTensor)`](@ref),
-[`opposite(::AbstractLinear{T,R} where {T,R}`](@ref).
+[`opposite(::AbstractLinear)`](@ref).
 """
 opposite(x::AbstractSimplex) = OppositeSimplex(x)
 opposite(y::OppositeSimplex) = y.x
@@ -93,7 +93,7 @@ Apply `opposite` to the components of `t` and return their tensor product.
 
 See also
 [`opposite(::AbstractSimplex)`](@ref),
-[`opposite(::AbstractLinear{T,R} where {T,R})`](@ref).
+[`opposite(::AbstractLinear)`](@ref).
 """
 opposite(x::AbstractTensor) = Tensor(map(opposite, Tuple(x)))
 
@@ -117,7 +117,7 @@ See also
 [`opposite(::AbstractSimplex)`](@ref),
 [`opposite(::AbstractTensor)`](@ref).
 
-# Example
+# Examples
 ```jldoctest
 julia> using LinearCombinations; using LinearCombinations: diff
 
@@ -137,6 +137,8 @@ julia> diff(c) == opposite(diff(a))
 false
 ```
 """
+opposite(::AbstractLinear)
+
 @linear_kw function opposite(a::AbstractLinear{T,R};
         coefftype = R,
         addto = zero(Linear{return_type(opposite, T),unval(coefftype)}),

@@ -20,7 +20,7 @@ See also [`arity`](@ref).
 
 # Examples
 ```jldoctest
-julia> Surjection([1,2,3,1])
+julia> Surjection([1, 2, 3, 1])
 Surjection{3}([1, 2, 3, 1])
 
 julia> Surjection(Int[])
@@ -86,6 +86,8 @@ Return the differential (or boundary) of `u` in the surjection operad.
 
 This function is linear and supports the keyword arguments `coefftype`, `addto`,
 `coeff` and `is_filtered` as described for the macro `@linear`.
+
+See also `LinearCombinations.@linear`.
 """
 @linear_kw function diff(surj::Surjection{k};
         coefftype = Int,
