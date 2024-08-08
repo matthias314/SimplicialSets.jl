@@ -23,6 +23,10 @@ using Base: Fix1, Fix2, @propagate_inbounds
 import Base: show, ==, hash, copy, one, isone, *, /, ^, inv,
     length, firstindex, lastindex, getindex, setindex!
 
+if VERSION < v"1.11.0-"
+    const Memory = Vector
+end
+
 include("abstract.jl")
 include("product.jl")
 include("opposite.jl")

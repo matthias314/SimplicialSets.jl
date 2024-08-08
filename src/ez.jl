@@ -14,10 +14,10 @@ multinomial(k1, ks...) = binomial(k1+sum(ks)::Int, k1)*multinomial(ks...)
 # multinomial(k::Int...) = length(k) <= 1 ? 1 : binomial(sum(k)::Int, k[1])*multinomial(k[2:end]...)
 
 function foreach_shuffle_simplex(f, p::Int, q::Int, x0::S, y0::T, m::Int = 0;
-        xv = Vector{S}(undef, q+1),
-        yv = Vector{T}(undef, q+1),
-        kv = Vector{Int}(undef, q+1),
-        sv = Vector{Int}(undef, q+1))  where {S <: AbstractSimplex, T <: AbstractSimplex}
+        xv = Memory{S}(undef, q+1),
+        yv = Memory{T}(undef, q+1),
+        kv = Memory{Int}(undef, q+1),
+        sv = Memory{Int}(undef, q+1))  where {S <: AbstractSimplex, T <: AbstractSimplex}
     i = 1
     xv[1] = x0
     yv[1] = y0
@@ -58,10 +58,10 @@ function _ez(f::F, addto, coeff, x::S, y::T, z...) where {F,S,T}
 
     # stack for foreach_shuffle_simplex
     # this is not necessary, but avoids allocations
-    xv = Vector{S}(undef, q+1)
-    yv = Vector{T}(undef, q+1)
-    kv = Vector{Int}(undef, q+1)
-    sv = Vector{Int}(undef, q+1)
+    xv = Memory{S}(undef, q+1)
+    yv = Memory{T}(undef, q+1)
+    kv = Memory{Int}(undef, q+1)
+    sv = Memory{Int}(undef, q+1)
 
     # foreach_shuffle_simplex(p, q, x, y) do xx, yy, ss
     foreach_shuffle_simplex(p, q, x, y; xv, yv, kv, sv) do xx, yy, ss
@@ -261,10 +261,10 @@ true
     x, y = Tuple(z)
 
     # stack for foreach_shuffle_simplex
-    xv = Vector{S}(undef, n+1)
-    yv = Vector{T}(undef, n+1)
-    kv = Vector{Int}(undef, n+1)
-    sv = Vector{Int}(undef, n+1)
+    xv = Memory{S}(undef, n+1)
+    yv = Memory{T}(undef, n+1)
+    kv = Memory{Int}(undef, n+1)
+    sv = Memory{Int}(undef, n+1)
 
     for p in 0:n-1, q in 0:n-1-p
         xx = r(x, ((0, p), (p+q+1, n)))
@@ -326,10 +326,10 @@ julia> shih(ez(x, y)), aw(shih(z)), shih(shih(z))
     x, y = Tuple(z)
 
     # stack for foreach_shuffle_simplex
-    xv = Vector{S}(undef, n)
-    yv = Vector{T}(undef, n)
-    kv = Vector{Int}(undef, n)
-    sv = Vector{Int}(undef, n)
+    xv = Memory{S}(undef, n)
+    yv = Memory{T}(undef, n)
+    kv = Memory{Int}(undef, n)
+    sv = Memory{Int}(undef, n)
 
     for p in 0:n-1, q in 0:n-1-p
         m = n-1-p-q
