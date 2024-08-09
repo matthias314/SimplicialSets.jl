@@ -12,6 +12,11 @@ interval_length(k::Interval) = last(k)-first(k)+1
 
 export AbstractSimplex, isdegenerate
 
+"""
+    AbstractSimplex <: Any
+
+This is the supertype of all types representing simplices.
+"""
 abstract type AbstractSimplex end
 
 @linear_broadcastable AbstractSimplex
@@ -26,6 +31,8 @@ abstract type AbstractSimplex end
     dim(x::AbstractSimplex) -> Int
 
 Return the dimension of the simplex `x`.
+
+See also [`deg`].
 """
 function dim end
 
@@ -37,13 +44,26 @@ function d!(x::AbstractSimplex, kk::AbstractVector{<:Integer})
 end
 
 """
-    d(x::T, k) where T <: AbstractSimplex -> T
-    d(x::T, ks::Integer...) where T <: AbstractSimplex -> T
+    SimplicialSets.d(x::T, k) where T <: AbstractSimplex -> T
+    SimplicialSets.d(x::T, kv::AbstractVector{<:Integer}) where T <: AbstractSimplex -> T
 
 In the first form, return the `k`-th facet of `x`. In the second form,
-apply `d` repeatedly to `x`, starting with the last element of `ks`.
+apply `d` repeatedly to `x`, starting with the last element of `kv`.
 
-TODO CHECK
+See also [SimplicialSets.s](@ref).
+
+# Examples
+```jldoctest
+julia> using SimplicialSets: d
+
+julia> x = SymbolicSimplex(:x, 3)
+x[0,1,2,3]
+
+julia> d(x, 1)
+x[0,2,3]
+
+julia> d(x, [1, 3])
+x[0,2]
 ```
 """
 @generated function d(x::T, kk) where T <: AbstractSimplex
@@ -61,6 +81,29 @@ function s!(x::AbstractSimplex, kk::AbstractVector{<:Integer})
     x
 end
 
+"""
+    SimplicialSets.s(x::T, k) where T <: AbstractSimplex -> T
+    SimplicialSets.s(x::T, kv::AbstractVector{<:Integer}) where T <: AbstractSimplex -> T
+
+In the first form, return the `k`-th degeneracy of `x`. In the second form,
+apply `d` repeatedly to `x`, starting with the first element of `kv`.
+
+See also [SimplicialSets.d](@ref).
+
+# Examples
+```jldoctest
+julia> using SimplicialSets: s
+
+julia> x = SymbolicSimplex(:x, 3)
+x[0,1,2,3]
+
+julia> s(x, 1)
+x[0,1,1,2,3]
+
+julia> s(x, [1, 3])
+x[0,1,1,2,2,3]
+```
+"""
 @generated function s(x::T, kk) where T <: AbstractSimplex
     if hasmethod(s!, (T, Int))
         :(s!(copy(x), kk))
@@ -157,7 +200,7 @@ elements of the *normalized* chain complex of the corresponding simplicial set.
 
 See also `LinearCombinations.linear_filter`.
 
-# Examples
+# Example
 ```jldoctest
 julia> using LinearCombinations; using SimplicialSets: s
 
@@ -185,10 +228,10 @@ deg(x::AbstractSimplex) = dim(x)
 Return the differential or boundary of `x` as a linear combination.
 By default, the coefficients are of type `Int`.
 
-This functions supports the keyword arguments `coefftype`, `addto`,
+This functions is linear and supports the keyword arguments `coefftype`, `addto`,
 `coeff` and `is_filtered` as described for `@linear`.
 
-TODO
+Note that because of a name clash with `Base.diff`, this function must be explicitly imported.
 
 See also `LinearCombinations.@linear`.
 

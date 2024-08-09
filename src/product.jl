@@ -10,13 +10,12 @@ import Base: length, iterate, convert
 
 # struct ProductSimplex{T<:Tuple{Vararg{AbstractSimplex}}} <: AbstractSimplex
 """
-    ProductSimplex{T<:Tuple{Vararg{AbstractSimplex}}}
+    ProductSimplex{T<:Tuple{Vararg{AbstractSimplex}}} <: AbstractSimplex
 
-    ProductSimplex{T}(t::Tuple)
-    ProductSimplex{T}{t::Tuple; dim::Integer}
+    ProductSimplex{T}{t::Tuple{Vararg{AbstractSimplex}} [; dim::Integer]}
 
-    ProductSimplex(t::Tuple [; dim::Integer])
-    ProductSimplex(xs::AbstractSimplex [; dim::Integer])
+    ProductSimplex(t::Tuple{Vararg{AbstractSimplex}} [; dim::Integer])
+    ProductSimplex(xs::AbstractSimplex... [; dim::Integer])
 
 A type representing an element in the product of simplicial sets. Empty products are allowed.
 The component simplices must all be of the same dimension.
@@ -77,12 +76,17 @@ function show(io::IO, x::ProductSimplex)
 end
 
 """
-    Tuple(x::ProductSimplex{T}) where T <: Tuple -> T
+    Tuple(x::ProductSimplex{T}) where T <: Tuple{Vararg{AbstractSimplex}} -> T
 
 Return the tuple of component simplices of `x`.
 """
 Base.Tuple(x::ProductSimplex) = x.xl
 
+"""
+    length(x::ProductSimplex) -> Int
+
+Return the number of components (or factors) of `x`.
+"""
 length(x::ProductSimplex) = length(Tuple(x))
 
 firstindex(x::ProductSimplex) = 1
@@ -150,7 +154,7 @@ This function is linear. Also note that it is overloaded from the package `Linea
 not from `Base`. If one wants to use the short form `cat`, then one needs to import the function
 via `using` or `import`.
 
-See also [`swap`](@ref), [`flatten`](@ref).
+See also [`flatten`](@ref).
 
 # Example
 ```jldoctest
@@ -178,7 +182,7 @@ appearing within `x`.
 
 This function is linear. Also note that it is overloaded from the package `LinearCombinations`.
 
-See also [`swap`](@ref), [`SimplicialSets.cat`](@ref).
+See also [`LinearCombinations.Regroup`](@ref), [`SimplicialSets.cat`](@ref).
 
 # Examples
 ```jldoctest
@@ -217,10 +221,39 @@ Swap the two components of the `ProductSimplex` `z` and return the resulting `Pr
 
 This function is linear. Also note that it is overloaded from the package `LinearCombinations`.
 
-See also [`flatten`](@ref), [`SimplicialSets.cat`](@ref).
+See also [`LinearCombinations.Regroup`](@ref).
 """
 swap(::ProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex}
 
+"""
+    (rg::LinearCombinations.Regroup)(z::ProductSimplex) -> ProductSimplex
+
+Apply the `Regroup` element `rg` to `z` and return the result. This allows to permute and restructure
+the components of a product simplex in an arbitrary way (without dropping any component).
+
+This functions is linear and supports the keyword arguments `coefftype`, `addto`,
+`coeff` and `is_filtered` as described for `@linear`.
+
+See `LinearCombinations.@linear`, `LinearCombinations.regroup`, [`swap`](@ref), [`flatten`](@ref).
+
+# Example
+
+```@jldoctest
+julia> using LinearCombinations
+
+julia> rg = regroup(:( ((1, 2), 3) ), :( (2, (3, 1))  ))
+Regroup{((1, 2), 3),(2, (3, 1))}
+
+julia> x, y, z = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2), SymbolicSimplex(:z, 2)
+(x[0,1,2], y[0,1,2], z[0,1,2])
+
+julia> w = ProductSimplex(ProductSimplex(x, y), z)
+((x[0,1,2],y[0,1,2]),z[0,1,2])
+
+julia> rg(w)
+(y[0,1,2],(z[0,1,2],x[0,1,2]))
+```
+"""
 function (rg::Regroup{A})(x::T) where {A,T<:ProductSimplex}
     regroup_check_arg(ProductSimplex, typeof(A), T) ||
         error("argument type $(typeof(x)) does not match first Regroup parameter $A")

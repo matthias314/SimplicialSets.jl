@@ -15,8 +15,8 @@ const Label = Union{Symbol,Char}
     SymbolicSimplex(label, n::Integer)
 
 This type represents "symbolic simplices" that are given by a label
-and a weakly increasing sequence of integers enumerating the vertices.
-Such a simplex is degenerate if an integer is repeated.
+and a weakly increasing sequence of non-negative integers enumerating the vertices.
+Such a simplex is degenerate if any integer is repeated.
 
 The label can be of type `Symbol` or `Char`. The vertex numbers must be between `0`
 and `31`, and the dimension cannot be larger than `24`. If an integer `n` is passed

@@ -10,21 +10,50 @@ export Surjection, arity
     Surjection{K}(u [; check = true]) where K
     Surjection(u)
 
-A type representing an element of arity `K` in the surjection operad.
+    (surj::Surjection)(x::T) where T <: AbstractSimplex -> Linear{T}
+
+The type `Surjection{K}` represents elements of arity `K` in the surjection operad.
 
 The first constructor return the surjection given by `u` TODO. If the optional
-keyword argument is set to `false`, then it is not checked that `u` is indeed a surjection.
-The second constructor is equivalent to the first with `K` set to `maximum(u)`.
+keyword argument `check` is set to `false`, then it is not checked that `u` is indeed a surjection.
+The second constructor is equivalent to the first with `K` set to `maximum(u; init = 0)`.
 
-See also [`arity`](@ref).
+When a `Surjection` is applied to a simplex, the result is the corresponding interval cut operation.
+This evaluation is linear and supports the keyword arguments `coefftype`, `addto`,
+`coeff` and `is_filtered` as described for the macro `@linear`.
+
+See also [`arity`](@ref), [`deg(::Surjection)`](@ref), [`diff(::Surjection)`](@ref),
+[`SimplicialSets.is_surjection`](@ref), [`LinearCombinations.linear_filter(::Surjection)`](@ref),
+`LinearCombinations.@linear`.
 
 # Examples
+
+## Surjection operad
+
 ```jldoctest
 julia> Surjection([1, 2, 3, 1])
 Surjection{3}([1, 2, 3, 1])
 
 julia> Surjection(Int[])
 Surjection{0}(Int64[])
+```
+
+## Interval cuts
+
+```jldoctest
+julia> using LinearCombinations: diff, deg
+
+julia> surj = Surjection([1, 2, 1])
+Surjection{2}([1, 2, 1])
+
+julia> x = SymbolicSimplex(:x, 2)
+x[0,1,2]
+
+julia> surj(x)
+-x[0,1,2]⊗x[0,1]-x[0,1,2]⊗x[1,2]+x[0,2]⊗x[0,1,2]
+
+julia> diff(surj(x)) == diff(surj)(x) + (-1)^deg(surj) * surj(diff(x))
+true
 ```
 """
 struct Surjection{K}          # K is the number of labels
@@ -40,6 +69,13 @@ show(io::IO, surj::Surjection{K}) where K = print(io, "Surjection{$K}($(repr(sur
 
 hash(surj::Surjection, h::UInt) = hash(surj.u, h)
 
+"""
+    deg(surj::Surjection) -> Int
+
+Return the degree of `surj`, which is the number of repetitions in the sequence of values.
+"""
+deg(::Surjection)
+
 deg(surj::Surjection{K}) where K = length(surj.u)-K
 
 """
@@ -49,12 +85,41 @@ Return the arity of the surjection `surj`.
 """
 arity(surj::Surjection{K}) where K = K
 
+"""
+    SimplicialSets.is_surjection(k::Integer, u::AbstractVector{<:Integer}) -> Bool
+
+Return true if `u` defines a surjection of arity `k`, that is, if it contains all values between `1` and `k`
+and no other values. In this case the call `Surjection{k}(u)` would return successfully.
+
+See also [`Surjection`](@ref), [`arity`](@ref).
+"""
 is_surjection(k::Integer, u::AbstractVector{<:Integer}) = extrema(u; init = (1, 0)) == (1, k) && all(in(u), 2:k-1)
 
 isdegenerate_surjection(u) = any(i -> @inbounds(u[i-1] == u[i]), 2:length(u))
 
+"""
+    isdegenerate(surj::Surjection) -> Bool
+
+A surjection is degenerate if two adjacent values are equal.
+
+# Examples
+```jldoctest
+julia> isdegenerate(Surjection([1, 2, 1]))
+false
+
+julia> isdegenerate(Surjection([1, 1, 2]))
+true
+```
+"""
 isdegenerate(surj::Surjection) = isdegenerate_surjection(surj.u)
 
+"""
+    LinearCombinations.linear_filter(surj::Surjection) -> Bool
+
+Return `true` if `surj` is not degenerate.
+
+See also `LinearCombinations.linear_filter`.
+"""
 linear_filter(surj::Surjection) = !isdegenerate(surj)
 
 # TODO: do we need to allow empty u? yes
@@ -82,13 +147,26 @@ Surjection(u) = Surjection{maximum(u; init = 0)}(u)
 """
     diff(surj::Surjection{K}) where K -> Linear{Surjection{K}}
 
-Return the differential (or boundary) of `u` in the surjection operad.
+Return the differential (or boundary) of `surj` in the surjection operad.
 
 This function is linear and supports the keyword arguments `coefftype`, `addto`,
 `coeff` and `is_filtered` as described for the macro `@linear`.
 
 See also `LinearCombinations.@linear`.
+
+# Example
+```jldoctest
+julia> using LinearCombinations: diff
+
+julia> surj = Surjection([1, 2, 1, 3, 1])
+Surjection{3}([1, 2, 1, 3, 1])
+
+julia> diff(surj)
+Surjection{3}([1, 2, 1, 3])-Surjection{3}([1, 2, 3, 1])+Surjection{3}([2, 1, 3, 1])
+```
 """
+LinearCombinations.diff(::Surjection)
+
 @linear_kw function diff(surj::Surjection{k};
         coefftype = Int,
         addto = zero(Linear{Surjection{k},unval(coefftype)}),

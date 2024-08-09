@@ -1,15 +1,14 @@
 # SimplicialSets.jl
 
-This packages provides functions to work with simplicial sets. Various kinds
+This packages provides types and functions to work with simplicial sets. Various kinds
 of simplicial sets are supported, including symbolic simplices, products,
 bar constructions and Kan loop groups.
 The Eilenberg-Zilber maps and interval cut operations are also implemented.
 
-**Docstrings and other documentation are under construction.
-Below we illustrate some of the available functionality.**
-
 The package uses [LinearCombinations.jl](https://github.com/matthias314/LinearCombinations.jl)
 to represent formal linear combinations of simplices. By default, coefficients are of type `Int`.
+
+The package comes with an extensive [documentation](https://matthias314.github.io/SimplicialSets.jl/dev/).
 
 ## Examples
 

@@ -85,7 +85,7 @@ ez_term_type(f, T, U...) = _ez_term_type(f, ez_term_type(f, T), U...)
 
     ez(AbstractTensor{T}) where T <: Tuple{Vararg{AbstractSimplex}} -> ProductSimplex{T}
 
-Return the image of the given simplices under the Eilenberg-Zilber or shuffle map.
+Return the image of the given simplices under the Eilenberg–Zilber or shuffle map.
 The first version is multilinear in the simplices and the second one linear in the
 tensor argument. Any number of simplices is allowed, including zero.
 
@@ -221,13 +221,13 @@ deg(::typeof(aw)) = Zero()
 """
     shih_opp(z::ProductSimplex{T}) where T <: Tuple{AbstractSimplex,AbstractSimplex} -> Linear{T}
 
-Return the image of the product simplex `z` under the *opposite* Eilenberg-MacLane homotopy
+Return the image of the product simplex `z` under the *opposite* Eilenberg–MacLane homotopy
 (which is sometimes called the opposite Shih map).
 
 This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`,
 `sizehint` and `is_filtered` as described for the macro `@linear`.
 
-See also [`aw`](@ref), [`ez`](@ref), [`shih_eml`](@ref), [`opposite`](@ref), [`swap`](@ref),
+See also [`aw`](@ref), [`ez`](@ref), [`shih`](@ref), [`opposite`](@ref), [`swap`](@ref),
 `LinearCombinations.@linear`.
 
 # Example
@@ -290,7 +290,7 @@ deg(::typeof(shih_opp)) = 1
     shih(z::ProductSimplex{T}) where T <: Tuple{AbstractSimplex,AbstractSimplex} -> Linear{T}
     shih_eml(z::ProductSimplex{T}) where T <: Tuple{AbstractSimplex,AbstractSimplex} -> Linear{T}
 
-Return the image of the product simplex `z` under the Eilenberg-MacLane homotopy
+Return the image of the product simplex `z` under the Eilenberg–MacLane homotopy
 (which is sometimes called the Shih map).
 
 This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`,
@@ -313,6 +313,8 @@ julia> shih(ez(x, y)), aw(shih(z)), shih(shih(z))
 (0, 0, 0)
 ```
 """
+shih_eml, shih
+
 @linear_kw function shih_eml(z::ProductSimplex{Tuple{S, T}};
         coefftype = Int,
         addto = zero(Linear{ProductSimplex{Tuple{S,T}},unval(coefftype)}),
@@ -353,11 +355,7 @@ end
 deg(::typeof(shih_eml)) = 1
 
 # setting the default version
-"""
-    const shih = shih_eml
 
-`shih` is a short form for the usual Eilenberg-MacLane homotopy [`shih_eml`](@ref).
-"""
 const shih = shih_eml
 
 #
@@ -396,12 +394,15 @@ end
 export diag
 
 """
-    diag(x::T) where T <: AbstractSimplex -> ProductSimplex{T,T}
+    diag(x::T) where T <: AbstractSimplex -> ProductSimplex{Tuple{T,T}}
 
 Return the image of `x` under the diagonal map from the simplicial set containing `x`
 to the Cartesian product with itself.
 
-See also [`coprod`](@ref).
+This function is linear and supports the keyword arguments `coefftype`, `addto`, `coeff`,
+`sizehint` and `is_filtered` as described for the macro `@linear`.
+
+See also [`coprod`](@ref), `LinearCombinations.@linear`.
 """
 diag(x::AbstractSimplex) = @inbounds ProductSimplex(x, x)
 
