@@ -75,7 +75,7 @@ Return the inverse element of `x` in the group of `n`-simplices in the simplicia
 bar construction containing that simplex.
 Here `T` is assumed to be a commutative (simplicial) group.
 """
-inv(x::BarSimplex{T}) where T = BarSimplex(inv.(x.g))
+inv(x::BarSimplex) = BarSimplex(inv.(x.g))
 
 """
     *(x::BarSimplex{T}...) where T -> BarSimplex{T}
