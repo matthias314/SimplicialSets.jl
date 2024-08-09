@@ -2,7 +2,8 @@
 # loop group
 #
 
-import Base: one, isone, inv, *, /, ^
+import Base: one, isone, inv, *, /, ^,
+    eltype, length, iterate
 
 # LoopGroupGenerator
 
@@ -87,6 +88,8 @@ end
 dim(g::LoopGroupSimplex) = g.dim
 
 copy(g::LoopGroupSimplex) = LoopGroupSimplex(copy(g.gens), g.dim)
+
+eltype(::Type{LoopGroupSimplex{T}}) where T = LoopGroupGenerator{T}
 
 length(g::LoopGroupSimplex) = length(g.gens)
 
