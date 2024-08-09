@@ -4,7 +4,8 @@
 
 export BarSimplex
 
-import Base: *, /, ^, one, isone, inv
+import Base: *, /, ^, one, isone, inv,
+    eltype, length, iterate
 
 """
     BarSimplex{T} <: AbstractSimplex
@@ -40,6 +41,8 @@ show(io::IO, x::BarSimplex) = print(io, '[', join(x.g, ','), ']')
 @struct_equal_hash BarSimplex{T} where T
 
 copy(x::BarSimplex{T}) where T = BarSimplex{T}(copy(x.g))
+
+eltype(::Type{BarSimplex{T}}) where T = T
 
 """
     length(x::BarSimplex) -> Int

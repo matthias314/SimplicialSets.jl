@@ -270,20 +270,22 @@ end
 function test_barsimplex(n, m, groupsimplex, is_commutative)
     for k in 0:n
         T = typeof(groupsimplex(0, m))
-	v = T[groupsimplex(i-1, m) for i in 1:k]
+	    v = T[groupsimplex(i-1, m) for i in 1:k]
         x = @inferred BarSimplex(v)
-	xc = BarSimplex(copy(v))
+        @test eltype(x) == T
+        @test length(x) == k
+	    xc = BarSimplex(copy(v))
         @test xc == copy(x) !== x
 
-	test_simplex(x, k)
-	
-	is_commutative || continue
-	
+	    test_simplex(x, k)
+
+        is_commutative || continue
+
         test_group(x, true)
-	for l in 0:n
+        for l in 0:n
             y = BarSimplex(T[groupsimplex(i-1, m) for i in 1:l])
-	    test_group(x, y, true)
-	end
+            test_group(x, y, true)
+	    end
     end
 end
 
