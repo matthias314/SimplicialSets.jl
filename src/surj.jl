@@ -49,7 +49,7 @@ Return the arity of the surjection `surj`.
 """
 arity(surj::Surjection{K}) where K = K
 
-is_surjection(k, u::AbstractVector{Int}) = extrema(u; init = (1, 0)) == (1, k) && all(Fix2(in, u), 2:k-1)
+is_surjection(k::Integer, u::AbstractVector{<:Integer}) = extrema(u; init = (1, 0)) == (1, k) && all(in(u), 2:k-1)
 
 isdegenerate_surjection(u) = any(i -> @inbounds(u[i-1] == u[i]), 2:length(u))
 
