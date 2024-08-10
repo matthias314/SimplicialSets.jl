@@ -4,7 +4,8 @@
 
 export AddToMul, Lattice
 
-import Base: *, /, ^, +, -, zero, iszero, one, isone
+import Base: *, /, ^, +, -, zero, iszero, one, isone,
+    Tuple, eltype, size, iterate, getindex
 
 #
 # AddToMul
@@ -61,7 +62,7 @@ inv(a::AddToMul) = AddToMul(-a.x)
 #
 
 """
-    Lattice{N}
+    Lattice{N} <: AbstractVector{Int}
 
     Lattice(t::NTuple{N,Integer}) -> Lattice{N}
     Lattice(x::Integer...) -> Lattice
@@ -89,7 +90,7 @@ julia> length(x)
 3
 ```
 """
-struct Lattice{N}
+struct Lattice{N} <: AbstractVector{Int}
     v::NTuple{N, Int}
 end
 
@@ -97,9 +98,15 @@ Lattice(ii::Int...) = Lattice(ii)
 
 show(io::IO, g::Lattice) = print(io, g.v)
 
-length(::Lattice{N}) where N = N
+Tuple(g::Lattice) = g.v
+
+eltype(::Lattice) = Int
+
+size(::Lattice{N}) where N = (N,)
 
 iterate(g::Lattice, state...) = iterate(g.v, state...)
+
+@propagate_inbounds getindex(g::Lattice, i::Int) = g.v[i]
 
 zero(::Type{Lattice{N}}) where N = Lattice(ntuple(Returns(0), N))
 zero(::T) where T <: Lattice = zero(T)
