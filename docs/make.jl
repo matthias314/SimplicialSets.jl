@@ -10,5 +10,13 @@ DocMeta.setdocmeta!(SimplicialSets, :DocTestSetup, doctestsetup; recursive = tru
 
 makedocs(sitename = "SimplicialSets.jl",
     modules = [SimplicialSets],
+    pages = [
+        "index.md",
+        "simplices.md",
+        "basic.md",
+        "ez.md",
+        "surjection.md",
+        "helpers.md",
+    ],
     format = Documenter.HTML(),
     warnonly = true)
