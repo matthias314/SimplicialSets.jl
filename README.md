@@ -3,7 +3,7 @@
 This packages provides types and functions to work with simplicial sets. Various kinds
 of simplicial sets are supported, including symbolic simplices, products,
 bar constructions and Kan loop groups.
-The Eilenberg-Zilber maps and interval cut operations are also implemented.
+The Eilenberg–Zilber maps and interval cut operations are also implemented.
 
 The package uses [LinearCombinations.jl](https://github.com/matthias314/LinearCombinations.jl)
 to represent formal linear combinations of simplices. By default, coefficients are of type `Int`.
@@ -58,7 +58,7 @@ julia> diff(w)
 +⟨x[1,2,3]⁻¹,x[0,2,3],y[1,2,3]⁻¹,y[0,2,3]⟩
 ```
 
-### Eilenberg-Zilber maps
+### Eilenberg–Zilber maps
 ```julia
 julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
 (x[0,1,2], y[0,1,2])
@@ -71,10 +71,10 @@ julia> ez(x, y)   # shuffle map
 +(x[0,0,1,2,2],y[0,1,1,1,2])+(x[0,0,0,1,2],y[0,1,2,2,2])
 +(x[0,1,1,1,2],y[0,0,1,2,2])-(x[0,1,1,2,2],y[0,0,1,1,2])
 
-julia> aw(z)   # Alexander-Whitney map
+julia> aw(z)   # Alexander–Whitney map
 x[0,1]⊗y[1,2]+x[0]⊗y[0,1,2]+x[0,1,2]⊗y[2]
 
-julia> shih(z)    # Eilenberg-MacLane homotopy
+julia> shih(z)    # Eilenberg–MacLane homotopy
 -(x[0,1,1,2],y[0,1,2,2])+(x[0,0,1,1],y[0,1,1,2])
 -(x[0,0,0,1],y[0,1,2,2])+(x[0,0,1,2],y[0,2,2,2])
 ```
@@ -83,7 +83,7 @@ Let's check that `shih` is indeed a homotopy from the identity to `ez∘aw`:
 julia> diff(shih(z)) + shih(diff(z)) == ez(aw(z)) - z
 true
 ```
-Let's verify the "side conditions" for the Eilenberg-Zilber maps:
+Let's verify the "side conditions" for the Eilenberg–Zilber maps:
 ```julia
 julia> shih(ez(x, y)), aw(shih(z)), shih(shih(z))
 (0, 0, 0)
