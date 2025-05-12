@@ -1,3 +1,4 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+LinearCombinations = "67be3549-475c-46bf-8928-de3404d670d9"
 SimplicialSets = "3f952873-5d0e-4cfa-8412-438bae177e42"
