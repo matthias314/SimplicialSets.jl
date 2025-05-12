@@ -122,15 +122,18 @@ See also
 julia> using LinearCombinations; using LinearCombinations: diff
 
 julia> a = Linear(SymbolicSimplex(:x, 1) => 2)
+Linear{SymbolicSimplex{Symbol}, Int64} with 1 term:
 2*x[0,1]
 
 julia> b = opposite(a)
+Linear{OppositeSimplex{SymbolicSimplex{Symbol}}, Int64} with 1 term:
 -2*OppositeSimplex(x[0,1])
 
 julia> diff(b) == opposite(diff(a))
 true
 
 julia> c = Linear(OppositeSimplex(y) => c for (y, c) in a)
+Linear{OppositeSimplex{SymbolicSimplex{Symbol}}, Int64} with 1 term:
 2*OppositeSimplex(x[0,1])
 
 julia> diff(c) == opposite(diff(a))

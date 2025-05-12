@@ -208,6 +208,7 @@ julia> x = SymbolicSimplex(:x, 2)
 x[0,1,2]
 
 julia> Linear(s(x, 1) => 1)
+Linear{SymbolicSimplex{Symbol}, Int64} with 0 terms:
 0
 ```
 """
@@ -243,12 +244,15 @@ julia> x = SymbolicSimplex(:x, 2)
 x[0,1,2]
 
 julia> a = diff(x)
+Linear{SymbolicSimplex{Symbol}, Int64} with 3 terms:
 x[1,2]-x[0,2]+x[0,1]
 
 julia> b = zero(a); diff(x; addto = b, coeff = 2)
+Linear{SymbolicSimplex{Symbol}, Int64} with 3 terms:
 2*x[1,2]-2*x[0,2]+2*x[0,1]
 
 julia> b
+Linear{SymbolicSimplex{Symbol}, Int64} with 3 terms:
 2*x[1,2]-2*x[0,2]+2*x[0,1]
 ```
 """

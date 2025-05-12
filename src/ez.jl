@@ -100,24 +100,29 @@ julia> x, y = SymbolicSimplex(:x, 1), SymbolicSimplex(:y, 2)
 (x[0,1], y[0,1,2])
 
 julia> a = ez(x, y)
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 3 terms:
 (x[0,1,1,1],y[0,0,1,2])-(x[0,0,1,1],y[0,1,1,2])+(x[0,0,0,1],y[0,1,2,2])
 
 julia> ez(Tensor(x, y); addto = a, coeff = -1)
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 0 terms:
 0
 
 julia> z = SymbolicSimplex(:z, 0)
 z[0]
 
 julia> ez(x, y, z)
--(x[0,0,1,1],y[0,1,1,2],z[0,0,0,0])+(x[0,0,0,1],y[0,1,2,2],z[0,0,0,0])+(x[0,1,1,1],y[0,0,1,2],z[0,0,0,0])
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 3 terms:
+(x[0,1,1,1],y[0,0,1,2],z[0,0,0,0])-(x[0,0,1,1],y[0,1,1,2],z[0,0,0,0])+(x[0,0,0,1],y[0,1,2,2],z[0,0,0,0])
 
 julia> ez(x, y, z) == ez(ez(x, y), z)
 false
 
 julia> ez(x)
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}}}, Int64} with 1 term:
 (x[0,1])
 
 julia> ez(Tensor())
+Linear{ProductSimplex{Tuple{}}, Int64} with 1 term:
 ()
 ```
 """
@@ -187,15 +192,19 @@ julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
 (x[0,1,2], y[0,1,2])
 
 julia> aw(ProductSimplex(x, y))
+Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 3 terms:
 x[0]⊗y[0,1,2]+x[0,1,2]⊗y[2]+x[0,1]⊗y[1,2]
 
 julia> z = SymbolicSimplex(:z, 2); aw(ProductSimplex(x, y, z))
+Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 6 terms:
 x[0,1]⊗y[1]⊗z[1,2]+x[0,1,2]⊗y[2]⊗z[2]+x[0,1]⊗y[1,2]⊗z[2]+x[0]⊗y[0]⊗z[0,1,2]+x[0]⊗y[0,1]⊗z[1,2]+x[0]⊗y[0,1,2]⊗z[2]
 
 julia> aw(ProductSimplex(x))
+Linear{Tensor{Tuple{SymbolicSimplex{Symbol}}}, Int64} with 1 term:
 x[0,1,2]
 
 julia> aw(ProductSimplex(; dim = 0))
+Linear{Tensor{Tuple{}}, Int64} with 1 term:
 ()
 ```
 """
@@ -236,13 +245,16 @@ julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
 (x[0,1,2], y[0,1,2])
 
 julia> a = Linear(ProductSimplex(x, y) => 1)   # we use `Linear` to get the correct sign from `opposite` below
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 1 term:
 (x[0,1,2],y[0,1,2])
 
 julia> shih_opp(a)
--(x[0,1,1,2],y[1,1,2,2])-(x[0,0,0,2],y[0,1,2,2])+(x[0,0,1,2],y[0,1,1,2])+(x[0,0,1,2],y[1,2,2,2])
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 4 terms:
+-(x[0,0,0,2],y[0,1,2,2])+(x[0,0,1,2],y[0,1,1,2])+(x[0,0,1,2],y[1,2,2,2])-(x[0,1,1,2],y[1,1,2,2])
 
 julia> shih(a)
--(x[0,0,0,1],y[0,1,2,2])+(x[0,0,1,2],y[0,2,2,2])-(x[0,1,1,2],y[0,1,2,2])+(x[0,0,1,1],y[0,1,1,2])
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 4 terms:
+-(x[0,1,1,2],y[0,1,2,2])+(x[0,0,1,1],y[0,1,1,2])-(x[0,0,0,1],y[0,1,2,2])+(x[0,0,1,2],y[0,2,2,2])
 
 julia> shih_opp(opposite(swap(a))) == opposite(swap(shih(a)))
 true
@@ -304,13 +316,24 @@ julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2); z = ProductSimplex
 (x[0,1,2],y[0,1,2])
 
 julia> shih(z)
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 4 terms:
 -(x[0,1,1,2],y[0,1,2,2])+(x[0,0,1,1],y[0,1,1,2])-(x[0,0,0,1],y[0,1,2,2])+(x[0,0,1,2],y[0,2,2,2])
 
 julia> shih(ez(x, y))
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 0 terms:
 0
 
-julia> shih(ez(x, y)), aw(shih(z)), shih(shih(z))
-(0, 0, 0)
+julia> shih(ez(x, y))
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 0 terms:
+0
+
+julia> aw(shih(z))
+Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 0 terms:
+0
+
+julia> shih(shih(z))
+Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 0 terms:
+0
 ```
 """
 shih_eml, shih
@@ -427,6 +450,7 @@ julia> x = SymbolicSimplex(:x, 2)
 x[0,1,2]
 
 julia> coprod(x)
+Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 3 terms:
 x[0]⊗x[0,1,2]+x[0,1,2]⊗x[2]+x[0,1]⊗x[1,2]
 
 julia> coprod(x) == aw(diag(x))

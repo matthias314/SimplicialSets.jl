@@ -50,6 +50,7 @@ julia> x = SymbolicSimplex(:x, 2)
 x[0,1,2]
 
 julia> surj(x)
+Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 3 terms:
 -x[0,1,2]⊗x[0,1]-x[0,1,2]⊗x[1,2]+x[0,2]⊗x[0,1,2]
 
 julia> diff(surj(x)) == diff(surj)(x) + (-1)^deg(surj) * surj(diff(x))
@@ -162,6 +163,7 @@ julia> surj = Surjection([1, 2, 1, 3, 1])
 Surjection{3}([1, 2, 1, 3, 1])
 
 julia> diff(surj)
+Linear{Surjection{3}, Int64} with 3 terms:
 Surjection{3}([1, 2, 1, 3])-Surjection{3}([1, 2, 3, 1])+Surjection{3}([2, 1, 3, 1])
 ```
 """

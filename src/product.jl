@@ -161,13 +161,13 @@ See also [`flatten`](@ref).
 julia> using SimplicialSets: cat   # or: using LinearCombinations: cat
 
 julia> u = ProductSimplex(SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2))
-(x[0,1],y[0,1])
+(x[0,1,2],y[0,1,2])
 
 julia> v = ProductSimplex(SymbolicSimplex(:z, 2), SymbolicSimplex(:w, 2))
-(z[0,1],w[0,1])
+(z[0,1,2],w[0,1,2])
 
 julia> cat(u, v)
-(x[0,1],y[0,1],z[0,1],w[0,1])
+(x[0,1,2],y[0,1,2],z[0,1,2],w[0,1,2])
 ```
 """
 cat(x::ProductSimplex...) = ProductSimplex(_cat(x...); dim = dim(x[1]))
@@ -189,16 +189,16 @@ See also [`LinearCombinations.Regroup`](@ref), [`SimplicialSets.cat`](@ref).
 julia> using SimplicialSets: flatten   # or: using LinearCombinations: flatten
 
 julia> u = ProductSimplex(SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2))
-(x[0,1],y[0,1])
+(x[0,1,2],y[0,1,2])
 
 julia> v = ProductSimplex(SymbolicSimplex(:z, 2), SymbolicSimplex(:w, 2))
-(z[0,1],w[0,1])
+(z[0,1,2],w[0,1,2])
 
 julia> flatten(ProductSimplex(u, v))
-(x[0,1],y[0,1],z[0,1],w[0,1])
+(x[0,1,2],y[0,1,2],z[0,1,2],w[0,1,2])
 
 julia> flatten(ProductSimplex(ProductSimplex(u, v), u))
-(x[0,1],y[0,1],z[0,1],w[0,1],x[0,1],y[0,1])
+(x[0,1,2],y[0,1,2],z[0,1,2],w[0,1,2],x[0,1,2],y[0,1,2])
 ```
 """
 flatten(x::ProductSimplex) = ProductSimplex(_flatten(x); dim = dim(x))

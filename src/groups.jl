@@ -80,10 +80,16 @@ julia> x+y, x-y
 ((1, 1, 8), (1, 3, -2))
 
 julia> 2*x
-(2, 4, 6)
+3-element Lattice{3}:
+ 2
+ 4
+ 6
 
 julia> zero(x)
-(0, 0, 0)
+3-element Lattice{3}:
+ 0
+ 0
+ 0
 
 julia> length(x)
 3
@@ -92,7 +98,9 @@ julia> y[2]
 -1
 
 julia> a, z... = x; z
-(2, 3)
+2-element Vector{Int64}:
+ 2
+ 3
 ```
 """
 struct Lattice{N} <: AbstractVector{Int}
