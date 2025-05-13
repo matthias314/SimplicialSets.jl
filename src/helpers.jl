@@ -1,7 +1,7 @@
 module TestHelpers
 
 using ..SimplicialSets
-using StructEqualHash: @struct_equal_hash as @struct_equal_hash
+using StructEqualHash: @struct_equal_hash
 using LinearCombinations
 using SimplicialSets: d, s
 
