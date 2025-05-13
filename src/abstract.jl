@@ -256,6 +256,8 @@ Linear{SymbolicSimplex{Symbol}, Int64} with 3 terms:
 2*x[1,2]-2*x[0,2]+2*x[0,1]
 ```
 """
+diff(::AbstractSimplex)
+
 @linear_kw function diff(x::T;
         coefftype = Int,
         addto = zero(Linear{T,unval(coefftype)}),
