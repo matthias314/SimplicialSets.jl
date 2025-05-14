@@ -8,7 +8,7 @@ The Eilenberg–Zilber maps and interval cut operations are also implemented.
 The package uses [LinearCombinations.jl](https://github.com/matthias314/LinearCombinations.jl)
 to represent formal linear combinations of simplices. By default, coefficients are of type `Int`.
 
-The package comes with an extensive [documentation](https://matthias314.github.io/SimplicialSets.jl/dev/).
+The package comes with an extensive [documentation](https://matthias314.github.io/SimplicialSets.jl/stable/).
 
 ## Examples
 
