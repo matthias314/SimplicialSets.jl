@@ -1,7 +1,7 @@
 name = "SimplicialSets"
 uuid = "3f952873-5d0e-4cfa-8412-438bae177e42"
 authors = ["matthias314"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 StructEqualHash = "8bd03d06-bfef-4aaf-8250-1a26cbb401bf"
