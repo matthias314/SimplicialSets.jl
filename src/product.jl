@@ -76,11 +76,18 @@ function show(io::IO, x::ProductSimplex)
 end
 
 """
-    Tuple(x::ProductSimplex{T}) where T <: Tuple{Vararg{AbstractSimplex}} -> T
+    Tuple(x::ProductSimplex{T}) where T -> T <: Tuple{Vararg{AbstractSimplex}}
+    components(x::ProductSimplex{T}) where T -> T <: Tuple{Vararg{AbstractSimplex}}
 
 Return the tuple of component simplices of `x`.
+
+!!! note
+    The function `components` is deprecated. Use `Tuple` instead.
 """
+Tuple(x::ProductSimplex), components
+
 Base.Tuple(x::ProductSimplex) = x.xl
+@deprecate components(x::ProductSimplex) Tuple(x)
 
 """
     length(x::ProductSimplex) -> Int
