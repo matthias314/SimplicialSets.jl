@@ -13,25 +13,25 @@ const TENSORMAP = Tensor
 @testset "Interval" begin
     for a in ( (2, 5), 2 => 5, 2:5 )
         @test a isa Interval
-	@test interval_length(a) == 4
+        @test interval_length(a) == 4
     end
 end
 
 function test_simplex(x::AbstractSimplex, n)
     @test dim(x) isa Integer
     @test n == dim(x) >= 0
-    
+
     @test hash(x) isa UInt
     xc = @inferred copy(x)
     @test x == xc
     @test hash(x) == hash(xc)
-    
+
     @test_throws Exception d(x, -1)
     @test_throws Exception d(x, n+1)
     n == 0 && @test_throws Exception d(x, 0)
     @test_throws Exception s(x, -1)
-    @test_throws Exception s(x, n+1)    
-    
+    @test_throws Exception s(x, n+1)
+
     for i in 0:n
         if n >= 1
             y = @inferred d(x, i)
@@ -93,19 +93,19 @@ function test_simplex(x::AbstractSimplex, n)
             k2 = rand(k1:n)
             push!(kk, R(k1):R(k2))
         end
-	if !isempty(kk)
+        if !isempty(kk)
             y = SimplicialSets.r(x, kk)
             @test dim(y) == sum(map(length, kk))-1
             @test y == undo_basic(SimplicialSets.r(BasicSimplex(x), kk))
-	end
+        end
     end
 end
 
 @testset failfast=true "BasicSimplex" begin
     for n in 0:3
         x = SymbolicSimplex('x', n)
-	y = BasicSimplex(x)
-	@test dim(y) == dim(x)
+        y = BasicSimplex(x)
+        @test dim(y) == dim(x)
         n > 0 && @test all(0:n) do k ; d(y, k) == BasicSimplex(d(y.x, k)) end
         @test all(0:n) do k ; s(y, k) == BasicSimplex(s(y.x, k)) end
         test_simplex(y, n)
@@ -124,9 +124,9 @@ end
         if x1 isa BarSimplex{AddToMul{Lattice{2}}}
             # / is defined for commutative groups only
             @test y1 / y2 == BasicSimplex(x1 / x2)
-	else
-	    @test_throws Exception y1 / y2
-	end
+        else
+            @test_throws Exception y1 / y2
+        end
         @test one(y1) == BasicSimplex(one(x1))
         @test one(y1, 5) == BasicSimplex(one(x1, 5))
         @test one(typeof(y1)) == BasicSimplex(one(typeof(x1)))
@@ -136,7 +136,7 @@ end
 
 function test_group(x::T, is_commutative) where T <: AbstractSimplex
     n = dim(x)
-    
+
     onex = @inferred one(x)
     test_simplex(onex, n)
     @test isone(onex)
@@ -152,20 +152,20 @@ function test_group(x::T, is_commutative) where T <: AbstractSimplex
     @test x * onex == x == onex * x
     @test isone(x * inv(x)) && isone(inv(x) *x)
     @test_throws Exception x*one(T, n+1)
-    
+
     @test @inferred(x^0) == onex
     @test @inferred(x^1) == x
     @test @inferred(x^3) == x*x*x
     @test @inferred(x^(-1)) == inv(x)
     @test @inferred(x^(-2)) == inv(x)^2
-    
+
     invx = @inferred inv(x)
     @test dim(invx) == n
     for i in 0:n
         n > 0 && @test d(invx, i) == inv(d(x, i))
         @test s(invx, i) == inv(s(x, i))
     end
-    
+
     a = Linear(x => Int8(1), inv(x) => Int8(2))
     @test @inferred(one(a)) == Linear(one(T) => one(Int8))
     @test isone(one(a))
@@ -179,7 +179,7 @@ end
 
 function test_group(x::T, y::T, is_commutative) where T <: AbstractSimplex
     k, l = dim(x), dim(y)
-    
+
     if k == l
         xy = @inferred x*y
         @test dim(xy) == k
@@ -189,23 +189,23 @@ function test_group(x::T, y::T, is_commutative) where T <: AbstractSimplex
         end
         @test xy*x == x*y*x == x*(y*x)
         if is_commutative
-	    @test y*x == xy
+        @test y*x == xy
             @test x/y == x*inv(y)
-	else
+        else
             @test_throws Exception x/y
-	end
+        end
     else
         @test_throws Exception x*y
-    end	
+    end
 
     a = Linear{T,BigInt}(x => 2)
     b = Linear{T,Float32}(y => 3)
     ab = @inferred a*b
     @test coefftype(ab) == promote_type(BigInt, Float32) && termtype(ab) == T
     !iszero(ab) && @test deg(ab) == k+l
-    
+
     is_commutative && @test b*a == (-1)^(k*l) * ab
-    
+
     @test diff(ab) == diff(a)*b + (-1)^k*a*diff(b)
 end
 
@@ -215,35 +215,35 @@ end
         test_simplex(x, n)
         y = SymbolicSimplex('y', 1:2:2*n+1)
         test_simplex(y, n)
-	v = sort!(rand(UInt8(0):UInt8(31), n+1))
-	z = SymbolicSimplex(:z, v)
-	test_simplex(z, n)
-	@test isdegenerate(z) == !allunique(v)
+        v = sort!(rand(UInt8(0):UInt8(31), n+1))
+        z = SymbolicSimplex(:z, v)
+        test_simplex(z, n)
+        @test isdegenerate(z) == !allunique(v)
     end
 end
 
 @testset failfast=true "ProductSimplex" begin
     @test_throws Exception ProductSimplex()
     @test_throws Exception ProductSimplex(())
-    
+
     x = SymbolicSimplex('x', 2)
     y = SymbolicSimplex('y', 3)
     @test_throws Exception ProductSimplex(x, y)
     @test_throws Exception ProductSimplex(x; dim = 3)
     @test_throws Exception ProductSimplex(x, y; dim = 3)
-    
+
     for n in 0:3
         xv = ntuple(k -> BasicSimplex(SymbolicSimplex('a'+k, n)), 4)
-	for k in 0:4
+    for k in 0:4
             @test_throws Exception ProductSimplex(xv[1:k]; dim = -1)
-	    w = @inferred ProductSimplex(xv[1:k]; dim = BigInt(n))
-	    @test w == @inferred ProductSimplex(xv[1:k]...; dim = n)
-	    if k > 0
+            w = @inferred ProductSimplex(xv[1:k]; dim = BigInt(n))
+            @test w == @inferred ProductSimplex(xv[1:k]...; dim = n)
+            if k > 0
                 v = @inferred ProductSimplex(xv[1:k])
-		@test v == w
-	    end
+                @test v == w
+            end
             test_simplex(w, n)
-	end
+        end
     end
 end
 
@@ -256,28 +256,28 @@ end
     for n in 1:4
         # xv = ntuple(k -> LoopGroupSimplex(SymbolicSimplex('a'+k, n)), m)
         xv = ntuple(k -> LoopGroupSimplex(BasicSimplex(SymbolicSimplex('a'+k, n))), m)
-	u = xv[1]
-	for k in 0:m, l in 0:m
-	    v = prod(xv[1:k]; init = one(u))
-	    w = prod(xv[m-l+1:m]; init = one(u))
-	    test_simplex(v, n-1)
-	    test_group(v, false)
-	    test_group(v, w, false)
-        end	
+        u = xv[1]
+        for k in 0:m, l in 0:m
+            v = prod(xv[1:k]; init = one(u))
+            w = prod(xv[m-l+1:m]; init = one(u))
+            test_simplex(v, n-1)
+            test_group(v, false)
+            test_group(v, w, false)
+        end
     end
 end
 
 function test_barsimplex(n, m, groupsimplex, is_commutative)
     for k in 0:n
         T = typeof(groupsimplex(0, m))
-	    v = T[groupsimplex(i-1, m) for i in 1:k]
+        v = T[groupsimplex(i-1, m) for i in 1:k]
         x = @inferred BarSimplex(v)
         @test eltype(x) == T
         @test length(x) == k
-	    xc = BarSimplex(copy(v))
+        xc = BarSimplex(copy(v))
         @test xc == copy(x) !== x
 
-	    test_simplex(x, k)
+        test_simplex(x, k)
 
         is_commutative || continue
 
@@ -285,7 +285,7 @@ function test_barsimplex(n, m, groupsimplex, is_commutative)
         for l in 0:n
             y = BarSimplex(T[groupsimplex(i-1, m) for i in 1:l])
             test_group(x, y, true)
-	    end
+        end
     end
 end
 
@@ -361,25 +361,25 @@ const opposite_swap = opposite ∘ swap
     for n in (0, 1, 4)
         x = SymbolicSimplex(:x, n)
         test_simplex(x, n)
-	test_simplex(BasicSimplex(x), n)
-	
-	x = random_loopgroupsimplex(n, 2)
-	y = random_loopgroupsimplex(n, 2)
+        test_simplex(BasicSimplex(x), n)
+
+        x = random_loopgroupsimplex(n, 2)
+        y = random_loopgroupsimplex(n, 2)
         test_simplex(x, n)
-	test_group(x, false)
-	test_group(x, y, false)
-	
+        test_group(x, false)
+        test_group(x, y, false)
+
         x = random_barsimplex(n, 2)
         y = random_barsimplex(n, 2)
         test_simplex(x, n)
-	test_group(x, true)
-	test_group(x, y, true)
+        test_group(x, true)
+        test_group(x, y, true)
     end
-    
+
     for n in 0:8
         x = SymbolicSimplex(:x, n)
         a = Linear(x => 1)
-	@test opposite(diff(a)) == diff(opposite(a))
+        @test opposite(diff(a)) == diff(opposite(a))
     end
 end
 
@@ -388,8 +388,8 @@ end
 
     for k in 0:8
         t = Tensor(ntuple(Returns(SymbolicSimplex('i', 1)), k))
-	@inferred ez(t)
-	@inferred ez(t; coefftype = Val(Float16))
+        @inferred ez(t)
+        @inferred ez(t; coefftype = Val(Float16))
     end
 
     for m in 0:4, n in 0:4
@@ -400,25 +400,25 @@ end
         c2 = a |> opposite_swap |> ez
         @test c1 == c2
     end
-    
+
     n = 3
-    
+
     x = random_loopgroupsimplex(n, 2)
     y = random_loopgroupsimplex(n, 2)
     z = random_loopgroupsimplex(n, 2)
-    
+
     t = Tensor(BasicSimplex.((x, y, z)))
     @test ez(undo_basic(t)) == undo_basic(ez(t))
-    
+
     rgr = regroup( :( (1,(2,3)) ), :( (1,2,3) ) )
     rgl = regroup( :( ((1,2),3) ), :( (1,2,3) ) )
     @test rgr(ez(x, ez(y, z))) == ez(x, y, z) == rgl(ez(ez(x, y), z))
-    
+
     w = SymbolicSimplex('w', 0)
     @test @inferred(ez(Tensor(w, w))) == Linear(ProductSimplex(w, w) => 1)
     @test ez(x, w) == Linear(ProductSimplex(x, s(w, 0:n-1)) => 1)
     @test ez(w, x) == Linear(ProductSimplex(s(w, 0:n-1), x) => 1)
-    
+
     a = Linear(Tensor(x,y,z) => 1)
     @test diff(ez(a)) == ez(diff(a))
 end
@@ -426,11 +426,11 @@ end
 @testset failfast=true "aw" begin
     @test @inferred(aw(ProductSimplex(; dim = 0))) == Linear(Tensor() => 1)
     @test iszero(aw(ProductSimplex(; dim = 1)))
-    
+
     for k in 0:8
         w = ProductSimplex(ntuple(Returns(SymbolicSimplex('i', 1)), k); dim = 1)
-	@inferred aw(w)
-	@inferred aw(w; coefftype = Val(Float32))
+        @inferred aw(w)
+        @inferred aw(w; coefftype = Val(Float32))
     end
 
     for n in 0:8
@@ -438,7 +438,7 @@ end
         y = SymbolicSimplex('y', n)
         w = ProductSimplex(x, y)
         b = Linear(w => 1)
-    
+
         c1 = b |> aw |> opposite_swap
         c2 = b |> opposite_swap |> aw
         @test c1 == c2
@@ -460,7 +460,7 @@ end
     ar = w |> rgri |> aw |> TENSORMAP(identity, aw) |> rgr
     al = w |> rgli |> aw |> TENSORMAP(aw, identity) |> rgl
     @test ar == a == al
-    
+
     w = SymbolicSimplex('w', 0)
     @test @inferred(aw(ProductSimplex(w, w))) == Linear(Tensor(w, w) => 1)
     @test aw(ProductSimplex(x, s(w, 0:n-1))) == Linear(Tensor(x, w) => 1)
@@ -480,7 +480,7 @@ end
         @inferred shih_opp(w; coefftype = Val(Int32))
 
         b = Linear(w => 1)
-    
+
         c1 = b |> shih_eml |> opposite_swap
         c2 = b |> opposite_swap |> shih_opp
         @test c1 == c2
@@ -507,12 +507,12 @@ end
         @test shih(undo_basic(c)) == undo_basic(shih(b))
 
         @test iszero(shih(shih(b)))
-	
-	@test iszero(shih(ProductSimplex(u, u)))
+
+        @test iszero(shih(ProductSimplex(u, u)))
 
         c1 = a |> rgri |> shih |> rgr |> rgli |> shih |> rgl
         c2 = a |> rgli |> shih |> rgl |> rgri |> shih |> rgr
-	@test c1 == -c2
+        @test c1 == -c2
     end
 end
 
@@ -598,7 +598,7 @@ end
     surj = @inferred Surjection{0}(Int[])
     @test @inferred arity(surj) == 0
     @test @inferred deg(surj) == 0
-    
+
     surj = @inferred Surjection{4}(Int[1,2,3,2,2,1,4])
     @test @inferred arity(surj) == 4
     @test @inferred deg(surj) == 3
@@ -610,11 +610,11 @@ end
     b = @inferred diff(a)
     @test typeof(b) == typeof(a)
     @test iszero(diff(b))
-    
+
     c = @inferred diff(a; coeff = 2)
     @test typeof(c) == typeof(a)
     @test c == 2*b
-    
+
     c2 = @inferred diff(a; addto = c, coeff = -2)
     @test c2 === c
     @test iszero(c2)
@@ -623,7 +623,7 @@ end
 @testset failfast=true "interval cuts" begin
     surj = Surjection(Int[])
     y = SymbolicSimplex('y', 0)
-    @test surj(y; coeff = -1) == Linear(Tensor() => -1)    
+    @test surj(y; coeff = -1) == Linear(Tensor() => -1)
 
     s12 = Surjection(1:2)
     s21 = Surjection([2,1])
@@ -634,22 +634,22 @@ end
     z = random_loopgroupsimplex(4, 3)
     w = random_barsimplex(4, 3)
     for x in (BasicSimplex(y), y, ProductSimplex(y, y), z, w)
-        surj = Surjection(Int[])	
+        surj = Surjection(Int[])
         @test iszero(surj(x))
 
         cx = coprod(x)
         @test s12(x) == cx
         @test s21(x) == swap(cx)
-    
+
         s1234 = Surjection(1:4)
         @test rg(f4(x)) == s1234(x)
-    
+
         surj = Surjection([1,3,3,2])
         @test iszero(surj(x))
-    
+
         for n in 0:8
             surj = Surjection(1:n)
-	    @inferred surj(x)
+        @inferred surj(x)
         end
     end
 end
