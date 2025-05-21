@@ -149,8 +149,8 @@ end
 
 # concatenating and flattening ProductSimplex
 
-using LinearCombinations: _cat
-import LinearCombinations: cat, flatten, _flatten
+using LinearCombinations: tuple_cat
+import LinearCombinations: cat, flatten, tuple_flatten
 
 """
     SimplicialSets.cat(x::ProductSimplex...) -> ProductSimplex
@@ -177,9 +177,9 @@ julia> cat(u, v)
 (x[0,1,2],y[0,1,2],z[0,1,2],w[0,1,2])
 ```
 """
-cat(x::ProductSimplex...) = ProductSimplex(_cat(x...); dim = dim(x[1]))
+cat(x::ProductSimplex...) = ProductSimplex(tuple_cat(x...); dim = dim(x[1]))
 
-_flatten(x::ProductSimplex) = _cat(map(_flatten, Tuple(x))...)
+tuple_flatten(x::ProductSimplex) = tuple_cat(map(tuple_flatten, Tuple(x))...)
 
 """
     SimplicialSets.flatten(x::ProductSimplex) -> ProductSimplex
@@ -208,7 +208,7 @@ julia> flatten(ProductSimplex(ProductSimplex(u, v), u))
 (x[0,1,2],y[0,1,2],z[0,1,2],w[0,1,2],x[0,1,2],y[0,1,2])
 ```
 """
-flatten(x::ProductSimplex) = ProductSimplex(_flatten(x); dim = dim(x))
+flatten(x::ProductSimplex) = ProductSimplex(tuple_flatten(x); dim = dim(x))
 
 #
 # regrouping
