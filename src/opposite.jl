@@ -100,7 +100,7 @@ opposite(x::AbstractTensor) = Tensor(map(opposite, Tuple(x)))
 q2(x::AbstractSimplex) = ifelse((dim(x)+1) & 2 == 0, 0, 1)
 # this is 0 if dim(x) == 0 or 3 mod 4, and 1 if dim(x) == 1 or 2 mod 4
 
-q2(t::AbstractTensor) = sum0(map(q2, Tuple(t)))
+q2(t::AbstractTensor) = sum(map(q2, Tuple(t)); init = Zero())
 
 """
     opposite(a::AbstractLinear{T,R}) -> Linear

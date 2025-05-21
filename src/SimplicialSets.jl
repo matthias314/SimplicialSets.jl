@@ -13,8 +13,10 @@ module SimplicialSets
 
 using StructEqualHash, LinearCombinations
 
-using LinearCombinations: Sign, ONE, withsign, Zero, sum0, return_type, @Function, unval
+using LinearCombinations: withsign, Zero, return_type, unval
 using LinearCombinations: coefftype as coeff_type
+
+const ONE = LinearCombinations.Sign(false)
 
 import LinearCombinations: linear_filter, deg, diff, coprod, hastrait
 
