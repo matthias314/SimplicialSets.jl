@@ -3,7 +3,7 @@ using Test, StructEqualHash, LinearCombinations, SimplicialSets
 using SimplicialSets: d, s, Interval, interval_length
 using SimplicialSets.TestHelpers
 
-using LinearCombinations: diff, signed
+using LinearCombinations: diff, withsign
 const TENSORMAP = Tensor
 
 #
@@ -343,16 +343,16 @@ end
 #=
 q2(n) = div(n*(n+1), 2)
 
-qsign(a::Linear) = Linear(x => signed(q2(deg(x)), c) for (x, c) in a)
+qsign(a::Linear) = Linear(x => withsign(q2(deg(x)), c) for (x, c) in a)
 
 opp_linear(a::Linear) = qsign(opposite(a))
 
 opp_swap(a::Linear{<:ProductSimplex}) =
     # deg(x) == degree of ProductSimplex(x, y)
-    Linear(opposite(ProductSimplex(y, x)) => signed(q2(deg(x)), c) for ((x, y), c) in a)
+    Linear(opposite(ProductSimplex(y, x)) => withsign(q2(deg(x)), c) for ((x, y), c) in a)
 
 opp_swap(a::Linear{<:Tensor}) =
-    Linear(opposite(Tensor(y, x)) => signed(q2(deg(x)+deg(y)), c) for ((x, y), c) in a)
+    Linear(opposite(Tensor(y, x)) => withsign(q2(deg(x)+deg(y)), c) for ((x, y), c) in a)
 =#
 
 const opposite_swap = opposite ∘ swap

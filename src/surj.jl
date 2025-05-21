@@ -191,7 +191,7 @@ LinearCombinations.diff(::Surjection)
         if i == 1 || i == l || u[i-1] != u[i+1]
             # this means that w below is non-degenerate
             w = deleteat!(copy(u), i)
-            addmul!(addto, Surjection{k}(w; check = false), signed(si, coeff); is_filtered = true)
+            addmul!(addto, Surjection{k}(w; check = false), withsign(si, coeff); is_filtered = true)
         end
     end
     addto
@@ -289,7 +289,7 @@ end
             end
         end
 
-        addmul!(addto, Tensor(xl), signed(s, coeff); is_filtered = true)
+        addmul!(addto, Tensor(xl), withsign(s, coeff); is_filtered = true)
     end
 
     addto

@@ -148,7 +148,7 @@ opposite(::AbstractLinear)
         coeff = ONE) where {T,R}
     iszero(coeff) && return addto
     for (x, c) in a
-        addmul!(addto, opposite(x), coeff*signed(q2(x), c); is_filtered = true)
+        addmul!(addto, opposite(x), coeff*withsign(q2(x), c); is_filtered = true)
     end
     addto
 end

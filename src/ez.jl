@@ -65,7 +65,7 @@ function _ez(f::F, addto, coeff, x::S, y::T, z...) where {F,S,T}
 
     # foreach_shuffle_simplex(p, q, x, y) do xx, yy, ss
     foreach_shuffle_simplex(p, q, x, y; xv, yv, kv, sv) do xx, yy, ss
-        _ez(f, addto, signed(ss, coeff), f(xx, yy), z...)
+        _ez(f, addto, withsign(ss, coeff), f(xx, yy), z...)
     end
 end
 
@@ -286,7 +286,7 @@ true
         # if nondeg || !(isdegenerate(xx, 0, p+1) || isdegenerate(yy, 0, q+1))
         if !(isdegenerate(xx, 0, p+1) || isdegenerate(yy, 0, q+1))
             foreach_shuffle_simplex(p, q+1, xx, yy; xv, yv, kv, sv) do xxx, yyy, sss
-                @inbounds addmul!(addto, ProductSimplex(xxx, s(yyy, p+q+1); dim = n+1), signed(p+q+sss, coeff); is_filtered = true)
+                @inbounds addmul!(addto, ProductSimplex(xxx, s(yyy, p+q+1); dim = n+1), withsign(p+q+sss, coeff); is_filtered = true)
             end
         end
     end
@@ -365,7 +365,7 @@ shih_eml, shih
         # if nondeg || !(isdegenerate(xx, m, m+p+1) || isdegenerate(yy, m, m+q+1))
         if !(isdegenerate(xx, m, m+p+1) || isdegenerate(yy, m, m+q+1))
             foreach_shuffle_simplex(p+1, q, s(xx, m), yy, m+1; xv, yv, kv, sv) do xxx, yyy, sss
-                @inbounds addmul!(addto, ProductSimplex(xxx, yyy; dim = n+1), signed(m+sss, coeff); is_filtered = true)
+                @inbounds addmul!(addto, ProductSimplex(xxx, yyy; dim = n+1), withsign(m+sss, coeff); is_filtered = true)
             end
         end
     end

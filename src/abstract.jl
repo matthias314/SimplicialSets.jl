@@ -269,7 +269,7 @@ diff(::AbstractSimplex)
     n = dim(x)
     if n != 0
         for k in 0:n
-            addmul!(addto, d(x, k), signed(k, coeff))
+            addmul!(addto, d(x, k), withsign(k, coeff))
         end
     end
     addto

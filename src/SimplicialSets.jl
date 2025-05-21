@@ -13,7 +13,7 @@ module SimplicialSets
 
 using StructEqualHash, LinearCombinations
 
-using LinearCombinations: Sign, ONE, signed, Zero, sum0, return_type, @Function, unval
+using LinearCombinations: Sign, ONE, withsign, Zero, sum0, return_type, @Function, unval
 using LinearCombinations: coefftype as coeff_type
 
 import LinearCombinations: linear_filter, deg, diff, coprod, hastrait
