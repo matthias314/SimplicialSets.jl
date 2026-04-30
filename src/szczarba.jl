@@ -1,18 +1,3 @@
-#
-# _Fix1
-#
-
-struct _Fix1{F,T}
-    f::F
-    x::T
-end
-
-(f::_Fix1)(xs...; kw...) = f.f(f.x, xs...; kw...)
-
-#
-# twisted Cartesian product
-#
-
 export LeftTwistedProductSimplex, RightTwistedProductSimplex
 
 abstract type AbstractTwistedProductSimplex <: AbstractSimplex end
@@ -313,7 +298,7 @@ function (szsh::SzczarbaShuffle{F})(t::Tensor{Tuple{X,Y}};
     foreach_szczarba(n) do ii
         m = has_char2(coefftype) ? Zero() : sum(ii)
         ez(szczarba_shuffle(szsh.twf, ii, x, g), y;
-            addto, coeff = withsign(m, coeff), f = _Fix1(szczarba_mul, szsh.twf))
+            addto, coeff = withsign(m, coeff), f = Fix1(szczarba_mul, szsh.twf))
     end
     addto
 end
