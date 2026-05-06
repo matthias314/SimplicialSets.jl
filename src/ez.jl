@@ -193,11 +193,11 @@ julia> x, y = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2)
 
 julia> aw(ProductSimplex(x, y))
 Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 3 terms:
-x[0]⊗y[0,1,2]+x[0,1,2]⊗y[2]+x[0,1]⊗y[1,2]
+x[0,1]⊗y[1,2]+x[0]⊗y[0,1,2]+x[0,1,2]⊗y[2]
 
 julia> z = SymbolicSimplex(:z, 2); aw(ProductSimplex(x, y, z))
 Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 6 terms:
-x[0,1]⊗y[1]⊗z[1,2]+x[0,1,2]⊗y[2]⊗z[2]+x[0,1]⊗y[1,2]⊗z[2]+x[0]⊗y[0]⊗z[0,1,2]+x[0]⊗y[0,1]⊗z[1,2]+x[0]⊗y[0,1,2]⊗z[2]
+x[0]⊗y[0]⊗z[0,1,2]+x[0]⊗y[0,1]⊗z[1,2]+x[0]⊗y[0,1,2]⊗z[2]+x[0,1]⊗y[1]⊗z[1,2]+x[0,1,2]⊗y[2]⊗z[2]+x[0,1]⊗y[1,2]⊗z[2]
 
 julia> aw(ProductSimplex(x))
 Linear{Tensor{Tuple{SymbolicSimplex{Symbol}}}, Int64} with 1 term:
@@ -250,7 +250,7 @@ Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, 
 
 julia> shih_opp(a)
 Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 4 terms:
--(x[0,0,0,2],y[0,1,2,2])+(x[0,0,1,2],y[0,1,1,2])+(x[0,0,1,2],y[1,2,2,2])-(x[0,1,1,2],y[1,1,2,2])
+(x[0,0,1,2],y[0,1,1,2])+(x[0,0,1,2],y[1,2,2,2])-(x[0,1,1,2],y[1,1,2,2])-(x[0,0,0,2],y[0,1,2,2])
 
 julia> shih(a)
 Linear{ProductSimplex{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 4 terms:
