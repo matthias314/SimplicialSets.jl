@@ -235,21 +235,21 @@ swap(::ProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSim
 """
     (rg::LinearCombinations.Regroup)(z::ProductSimplex) -> ProductSimplex
 
-Apply the `Regroup` element `rg` to `z` and return the result. This allows to permute and restructure
+Apply the `Regroup` object `rg` to `z` and return the result. This allows to permute and restructure
 the components of a product simplex in an arbitrary way (without dropping any component).
 
 This functions is linear and supports the keyword arguments `coefftype`, `addto`,
 `coeff` and `is_filtered` as described for `@linear`.
 
-See `LinearCombinations.@linear`, `LinearCombinations.regroup`, [`swap`](@ref), [`flatten`](@ref).
+See `LinearCombinations.@linear`, `LinearCombinations.@regroup_str`, [`swap`](@ref), [`flatten`](@ref).
 
 # Example
 
 ```@jldoctest
 julia> using LinearCombinations
 
-julia> rg = regroup(:( ((1, 2), 3) ), :( (2, (3, 1))  ))
-Regroup{((1, 2), 3),(2, (3, 1))}
+julia> rg = regroup"((1, 2), 3) -> (2, (3, 1))"
+Regroup{((1, 2), 3), (2, (3, 1))}
 
 julia> x, y, z = SymbolicSimplex(:x, 2), SymbolicSimplex(:y, 2), SymbolicSimplex(:z, 2)
 (x[0,1,2], y[0,1,2], z[0,1,2])
