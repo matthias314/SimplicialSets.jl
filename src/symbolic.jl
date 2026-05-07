@@ -66,8 +66,7 @@ function Base.hash(x::SymbolicSimplex, h::UInt)
 end
 
 function Base.:(==)(x::SymbolicSimplex, y::SymbolicSimplex)
-    # x.label == y.label &&
-    x.dim == y.dim && x.v == y.v
+    x.label == y.label && x.dim == y.dim && x.v == y.v
 end
 
 """
