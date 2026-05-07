@@ -24,7 +24,7 @@ as a second argument to the constructor, then the vertices are `0:n`.
 """
 struct SymbolicSimplex{L<:Label} <: AbstractSimplex
     label::L
-    dim::Int
+    dim::Int32
     v::UInt128
     function SymbolicSimplex(label::L, dim, v) where L <: Label
         @boundscheck if dim > 24
@@ -45,7 +45,7 @@ end
 
 SymbolicSimplex(label::Label, n::Integer) = SymbolicSimplex(label, 0:n)
 
-dim(x::SymbolicSimplex) = x.dim
+dim(x::SymbolicSimplex) = x.dim % Int
 
 # copy(x::SymbolicSimplex) = SymbolicSimplex(x.label, x.dim, x.v)
 copy(x::SymbolicSimplex) = x
@@ -66,8 +66,7 @@ function Base.hash(x::SymbolicSimplex, h::UInt)
 end
 
 function Base.:(==)(x::SymbolicSimplex, y::SymbolicSimplex)
-    # x.label == y.label &&
-    x.dim == y.dim && x.v == y.v
+    (x.label == y.label) & (x.dim == y.dim) && x.v == y.v
 end
 
 """
