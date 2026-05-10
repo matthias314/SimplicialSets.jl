@@ -236,7 +236,7 @@ end
 
     for n in 0:3
         xv = ntuple(k -> BasicSimplex(SymbolicSimplex('a'+k, n)), 4)
-    for k in 0:4
+        for k in 0:4
             @test_throws Exception ProductSimplex(xv[1:k]; dim = -1)
             w = @inferred ProductSimplex(xv[1:k]; dim = BigInt(n))
             @test w == @inferred ProductSimplex(xv[1:k]...; dim = n)
@@ -246,6 +246,15 @@ end
             end
             test_simplex(w, n)
         end
+    end
+
+    gs = map(s -> twf_loop(SymbolicSimplex(s, 2)), (:x, :y, :z))
+    for k in 0:3
+        g = ProductSimplex(gs[1:k]; dim = dim(gs[1]))
+        @test ⋅(g) == g
+        @test g⋅inv(g) == one(g)
+        @test ⋅(g, inv(g), g) == g
+        @test one(typeof(g)) == one(g, 0)
     end
 end
 

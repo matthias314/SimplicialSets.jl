@@ -147,6 +147,20 @@ end
     @inbounds all(y -> isdegenerate(y, k), Tuple(x))
 end
 
+# group operations
+
+function Base.one(::Type{ProductSimplex{T}}, n::Integer = 0) where T
+    ProductSimplex(map(Fix2(one, n), fieldtypes(T)); dim = n)
+end
+
+Base.one(g::T, n::Integer = dim(g)) where T <: ProductSimplex = one(T, n)
+
+function ⋅(gs::Vararg{ProductSimplex{<:NTuple{N,AbstractSimplex}},M}) where {N,M}
+    ProductSimplex(map(⋅, map(Tuple, gs)...); dim = dim(gs[1]))
+end
+
+Base.inv(g::ProductSimplex) = ProductSimplex(map(inv, Tuple(g)); dim = dim(g))
+
 # concatenating and flattening ProductSimplex
 
 using LinearCombinations: tuple_cat
