@@ -1,12 +1,54 @@
 #
+# AbstractProductSimplex
+#
+
+abstract type AbstractProductSimplex{T<:Tuple} <: AbstractSimplex end
+
+"""
+    Tuple(x::AbstractProductSimplex{T}) where T -> T <: Tuple{Vararg{AbstractSimplex}}
+    components(x::AbstractProductSimplex{T}) where T -> T <: Tuple{Vararg{AbstractSimplex}}
+
+Return the tuple of component simplices of `x`.
+
+!!! note
+    The function `components` is deprecated. Use `Tuple` instead.
+"""
+Tuple(x::AbstractProductSimplex), components
+
+"""
+    fieldtypes(::Type{P}) where P <: AbstractProductSimplex -> Tuple
+
+Return the types of the components of `P` as a tuple.
+
+# Example
+```jldoctest
+julia> fieldtypes(ProductSimplex{Tuple{SymbolicSimplex{Symbol},}})
+(Char, String)
+```
+"""
+Base.fieldtypes(::Type{<:AbstractProductSimplex{T}}) where T <: Tuple = fieldtypes(T)
+
+"""
+    length(x::AbstractProductSimplex) -> Int
+
+Return the number of components (or factors) of `x`.
+"""
+Base.length(x::AbstractProductSimplex) = length(Tuple(x))
+
+Base.firstindex(x::AbstractProductSimplex) = 1
+Base.lastindex(x::AbstractProductSimplex) = length(x)
+
+Base.iterate(x::AbstractProductSimplex, state...) = iterate(Tuple(x), state...)
+
+@propagate_inbounds Base.getindex(x::AbstractProductSimplex, k) = Tuple(x)[k]
+
+#
 # ProductSimplex datatype
 #
 
 export ProductSimplex
 
 using Base: @__MODULE__ as @MODULE
-
-import Base: length, iterate, convert
 
 # struct ProductSimplex{T<:Tuple{Vararg{AbstractSimplex}}} <: AbstractSimplex
 """
@@ -45,7 +87,7 @@ ERROR: dimensions of simplices do not match
 [...]
 ```
 """
-struct ProductSimplex{T<:Tuple} <: AbstractSimplex
+struct ProductSimplex{T<:Tuple} <: AbstractProductSimplex{T}
     xl::T
     dim::Int
 
@@ -75,38 +117,13 @@ function show(io::IO, x::ProductSimplex)
     print(io, '(', join(map(repr, Tuple(x)), ','), ')')
 end
 
-"""
-    Tuple(x::ProductSimplex{T}) where T -> T <: Tuple{Vararg{AbstractSimplex}}
-    components(x::ProductSimplex{T}) where T -> T <: Tuple{Vararg{AbstractSimplex}}
-
-Return the tuple of component simplices of `x`.
-
-!!! note
-    The function `components` is deprecated. Use `Tuple` instead.
-"""
-Tuple(x::ProductSimplex), components
-
-Base.Tuple(x::ProductSimplex) = x.xl
-@deprecate components(x::ProductSimplex) Tuple(x)
-
-"""
-    length(x::ProductSimplex) -> Int
-
-Return the number of components (or factors) of `x`.
-"""
-length(x::ProductSimplex) = length(Tuple(x))
-
-firstindex(x::ProductSimplex) = 1
-lastindex(x::ProductSimplex) = length(x)
-
-iterate(x::ProductSimplex, state...) = iterate(Tuple(x), state...)
-
-@propagate_inbounds getindex(x::ProductSimplex, k) = Tuple(x)[k]
+Base.Tuple(x::AbstractProductSimplex) = x.xl
+@deprecate components(x::AbstractProductSimplex) Tuple(x)
 
 # copy(x::ProductSimplex) = ProductSimplex(copy(x.xl))
 copy(x::ProductSimplex) = x
 
-convert(::Type{P}, x::ProductSimplex) where P <: ProductSimplex = @inbounds P(Tuple(x); dim = dim(x))
+Base.convert(::Type{P}, x::ProductSimplex) where P <: ProductSimplex = @inbounds P(Tuple(x); dim = dim(x))
 
 @struct_equal_hash ProductSimplex{T} where T
 # @struct_equal_hash ProductSimplex
@@ -167,7 +184,7 @@ using LinearCombinations: tuple_cat
 import LinearCombinations: cat, flatten, tuple_flatten
 
 """
-    SimplicialSets.cat(x::ProductSimplex...) -> ProductSimplex
+    SimplicialSets.cat(x::AbstractProductSimplex...) -> ProductSimplex
 
 Return the product simplex that is the concatenation of the simplices given as arguments.
 
@@ -191,12 +208,12 @@ julia> cat(u, v)
 (x[0,1,2],y[0,1,2],z[0,1,2],w[0,1,2])
 ```
 """
-cat(x::ProductSimplex...) = ProductSimplex(tuple_cat(x...); dim = dim(x[1]))
+cat(x::AbstractProductSimplex...) = ProductSimplex(tuple_cat(x...); dim = dim(x[1]))
 
-tuple_flatten(x::ProductSimplex) = tuple_cat(map(tuple_flatten, Tuple(x))...)
+tuple_flatten(x::AbstractProductSimplex) = tuple_cat(map(tuple_flatten, Tuple(x))...)
 
 """
-    SimplicialSets.flatten(x::ProductSimplex) -> ProductSimplex
+    SimplicialSets.flatten(x::AbstractProductSimplex) -> ProductSimplex
 
 Return the product simplex that is obtained by recursively flattening all product simplices
 appearing within `x`.
@@ -222,32 +239,27 @@ julia> flatten(ProductSimplex(ProductSimplex(u, v), u))
 (x[0,1,2],y[0,1,2],z[0,1,2],w[0,1,2],x[0,1,2],y[0,1,2])
 ```
 """
-flatten(x::ProductSimplex) = ProductSimplex(tuple_flatten(x); dim = dim(x))
+flatten(x::AbstractProductSimplex) = ProductSimplex(tuple_flatten(x); dim = dim(x))
 
 #
 # regrouping
 #
 
-using LinearCombinations: regroup_check_arg, regroup_eval_expr
-import LinearCombinations: regroup_length, regroup_getindex
-
-regroup_length(::Type{<:ProductSimplex{T}}) where T <: Tuple = regroup_length(T)
-
-@propagate_inbounds regroup_getindex(::Type{T}, i) where T <: ProductSimplex = regroup_getindex(T.parameters[1], i)
+using LinearCombinations: regroup_check_arg, regroup_eval_expr, regroup_getindex
 
 """
-    swap(z::ProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex} -> ProductSimplex{Tuple{T,S}}
+    swap(z::AbstractProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex} -> ProductSimplex{Tuple{T,S}}
 
-Swap the two components of the `ProductSimplex` `z` and return the resulting `ProductSimplex`.
+Swap the two components of the `AbstractProductSimplex` `z` and return the resulting `ProductSimplex`.
 
 This function is linear. Also note that it is overloaded from the package `LinearCombinations`.
 
 See also [`LinearCombinations.Regroup`](@ref).
 """
-swap(::ProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex}
+swap(::AbstractProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex}
 
 """
-    (rg::LinearCombinations.Regroup)(z::ProductSimplex) -> ProductSimplex
+    (rg::LinearCombinations.Regroup)(z::AbstractProductSimplex) -> ProductSimplex
 
 Apply the `Regroup` object `rg` to `z` and return the result. This allows to permute and restructure
 the components of a product simplex in an arbitrary way (without dropping any component).
@@ -275,8 +287,8 @@ julia> rg(w)
 (y[0,1,2],(z[0,1,2],x[0,1,2]))
 ```
 """
-function (rg::Regroup{A})(x::T) where {A,T<:ProductSimplex}
-    regroup_check_arg(ProductSimplex, typeof(A), T) ||
+function (rg::Regroup{A})(x::T) where {A,T<:AbstractProductSimplex}
+    regroup_check_arg(AbstractProductSimplex, typeof(A), T) ||
         error("argument type $(typeof(x)) does not match first Regroup parameter $A")
     @inbounds regroup_eval_expr(rg, regroup_getindex, ProductSimplex, x)
 end
