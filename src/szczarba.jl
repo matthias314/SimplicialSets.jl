@@ -390,3 +390,38 @@ function (szsh::SzczarbaShuffle{TWF})(t::RightTwistedTensor{X,Y};
     end
     addto
 end
+
+#
+# coproduct
+#
+
+Eop_right(k) = Surjection([isodd(i) ? k+1 : i÷2 for i in 1:2*k+1])
+
+function FFF_right(twc, x::X, y::Y) where {X <: AbstractSimplex, Y <: AbstractSimplex}
+    addto = zero(Linear{Tensor{Tuple{Y,X}},Int})
+    for k in 0:dim(x)
+        for (xx, c) in Eop_right(k)(x)
+            yy = foldr(*, map(twc, xx[1:end-1]); init = y)
+            m = deg(xx[end])*deg(y) +
+                # (k*(k-1))÷2 + sum(deg(xx[i]) for i in k:-2:1; init = 0) +
+                # sum(deg, xx[1:k]; init = 0) - k
+                (k*(k+1))÷2 + sum(deg(xx[i]) for i in k-1:-2:1; init = 0)
+            addmul!(addto, tensor(yy, xx[end]), withsign(m, c))
+        end
+    end
+    addto
+end
+
+@linear_kw function coprod(t::T;
+        coefftype = Int,
+        addto = zero(Linear{Tensor{Tuple{T, T}}, unval(coefftype)}),
+        coeff = ONE) where T <: RightTwistedTensor{<:AbstractSimplex, <:AbstractSimplex, <:SzczarbaTwc}
+    for ((x1, x2), c1) in coprod(t.x), ((y1, y2), c2) in coprod(t.y)
+        for ((yy, xx), c3) in FFF_right(t.twc, x2, y1)
+            t1 = RightTwistedTensor(t.twc, x1, yy)
+            t2 = RightTwistedTensor(t.twc, xx, y2)
+            addmul!(addto, Tensor(t1, t2), coeff*c1*c2*c3)
+        end
+    end
+    addto
+end
