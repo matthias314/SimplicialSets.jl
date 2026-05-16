@@ -275,6 +275,8 @@ diff(::AbstractSimplex)
     addto
 end
 
+LinearCombinations.return_type(::typeof(diff), ::Type{T}) where T <: AbstractSimplex = Linear{T,Int}
+
 export ⋅
 
 """

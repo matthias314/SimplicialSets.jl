@@ -219,6 +219,8 @@ end
 
 @linear aw
 
+LinearCombinations.return_type(::typeof(aw), ::Type{ProductSimplex{T}}) where T <: Tuple{Vararg{AbstractSimplex}} = Linear{Tensor{T},Int}
+
 deg(::typeof(aw)) = Zero()
 
 #
@@ -372,6 +374,9 @@ shih_eml, shih
 end
 
 @linear shih_eml
+
+LinearCombinations.return_type(::Union{typeof(shih_opp), typeof(shih_eml)}, ::Type{T}) where T <: ProductSimplex{<:NTuple{2,AbstractSimplex}} =
+    Linear{T,Int}
 
 deg(::typeof(shih_eml)) = 1
 
