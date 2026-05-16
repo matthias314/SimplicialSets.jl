@@ -18,7 +18,7 @@ using LinearCombinations: coefftype as coeff_type
 
 const ONE = LinearCombinations.Sign(false)
 
-import LinearCombinations: linear_filter, deg, diff, coprod, hastrait
+import LinearCombinations: linear_filter, deg, diff, coprod, hastrait, keeps_filtered
 
 using Base: Fix1, Fix2, @propagate_inbounds
 

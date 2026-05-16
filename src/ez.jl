@@ -153,8 +153,6 @@ hastrait(::typeof(ez), prop::Val, ::Type{<:AbstractTensor{T}}) where T <: Tuple 
 
 deg(::typeof(ez)) = Zero()
 
-keeps_filtered(::typeof(ez), ::Type) = true
-
 #
 # Alexander-Whitney map
 #
