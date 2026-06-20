@@ -256,7 +256,7 @@ flatten(x::AbstractProductSimplex) = ProductSimplex(tuple_flatten(x); dim = dim(
 # regrouping
 #
 
-using LinearCombinations: regroup_check_arg, regroup_eval_expr, regroup_getindex
+using LinearCombinations: regroup_check_arg, regroup_callable
 
 """
     swap(z::AbstractProductSimplex{Tuple{S,T}}) where {S <: AbstractSimplex, T <: AbstractSimplex} -> ProductSimplex{Tuple{T,S}}
@@ -299,7 +299,7 @@ julia> rg(w)
 ```
 """
 function (rg::Regroup{A})(x::T) where {A,T<:AbstractProductSimplex}
-    regroup_check_arg(AbstractProductSimplex, typeof(A), T) ||
+    regroup_check_arg(AbstractProductSimplex, A, T) ||
         error("argument type $(typeof(x)) does not match first Regroup parameter $A")
-    @inbounds regroup_eval_expr(rg, regroup_getindex, ProductSimplex, x)
+    @inbounds regroup_callable(rg, ProductSimplex, x)
 end

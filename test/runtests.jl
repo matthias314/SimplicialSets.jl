@@ -370,7 +370,7 @@ end
     for n in (0, 1, 4)
         x = SymbolicSimplex('x', n)
         y = SymbolicSimplex('y', n)
-        a = tensor(x, y)
+        a = Linear(Tensor(x, y) => 1)
         w = ProductSimplex(x, y)
         b = Linear(w => 1)
 
