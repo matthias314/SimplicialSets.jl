@@ -19,5 +19,5 @@ makedocs(sitename = "SimplicialSets.jl",
         "helpers.md",
     ],
     format = Documenter.HTML(),
-    doctest = isempty(ARGS) ? true : Symbol(ARGS[1]),  # "only" and "fix" are useful
+    doctest = isempty(ARGS) ? true : Symbol(ARGS[1]),  # "false", "only" and "fix" are useful
     warnonly = true)
