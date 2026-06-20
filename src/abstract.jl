@@ -302,6 +302,7 @@ julia> xx ⋅ yy
 ⟨x[0,1,2],y[0,1,2]⟩
 
 julia> xx * yy
+Linear{LoopGroupSimplex{SymbolicSimplex{Symbol}}, Int64} with 2 terms:
 ⟨x[0,1,2,2],y[0,1,1,2]⟩-⟨x[0,1,1,2],y[0,1,2,2]⟩
 ```
 """

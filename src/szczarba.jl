@@ -282,7 +282,7 @@ of simplices as argument.
 
 # Example
 ```jldoctest
-julia> SymbolicSimplex(:x, 3);
+julia> x = SymbolicSimplex(:x, 3);
 
 julia> sz = SzczarbaTwc(twf_loop);
 
@@ -294,11 +294,11 @@ julia> using LinearCombinations: diff
 
 julia> a = diff(sz(x)) + sz(diff(x))
 Linear{LoopGroupSimplex{SymbolicSimplex{Symbol}}, Int64} with 4 terms:
--⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹⟩+⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹,x[2,3,3]⁻¹⟩-⟨x[0,1,1]⁻¹,x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩+⟨x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩
+-⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹⟩-⟨x[0,1,1]⁻¹,x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩+⟨x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩+⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹,x[2,3,3]⁻¹⟩
 
 julia> b = x |> coprod |> Tensor(sz, sz) |> TensorSplat(*)
 Linear{LoopGroupSimplex{SymbolicSimplex{Symbol}}, Int64} with 4 terms:
--⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹⟩+⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹,x[2,3,3]⁻¹⟩-⟨x[0,1,1]⁻¹,x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩+⟨x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩
+-⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹⟩-⟨x[0,1,1]⁻¹,x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩+⟨x[1,2,3]⁻¹,x[2,3,3]⁻¹⟩+⟨x[0,1,2]⁻¹,x[1,2,2]⁻¹,x[2,3,3]⁻¹⟩
 
 julia> a == b
 true
@@ -353,9 +353,12 @@ tensor factor and the fiber to the second.
 ```jldoctest
 julia> x = SymbolicSimplex(:x, 2); y = one(typeof(twf_loop(x)));
 
-julia> Tensor(x, y) |> SzczarbaShuffle(twf_loop)
-Linear{RightTwistedProductSimplex{typeof(twf_loop), SymbolicSimplex{Symbol}, LoopGroupSimplex{SymbolicSimplex{Symbol}}}, Int64} with 2 terms:
--(x[0,0,2],⟨x[0,1,2,2]⁻¹,x[1,2,2,2]⁻¹⟩)˲+(x[0,1,2],⟨x[0,1,1,2]⁻¹,x[1,2,2,2]⁻¹⟩)˲
+julia> t = RightTwistedTensor(SzczarbaTwc(twf_loop), x, y)
+x[0,1,2]⊗˲⟨⟩
+
+julia> t |> SzczarbaShuffle(twf_loop)
+Linear{RightTwistedProductSimplex{SymbolicSimplex{Symbol}, LoopGroupSimplex{SymbolicSimplex{Symbol}}, typeof(twf_loop)}, Int64} with 2 terms:
+(x[0,1,2],⟨x[0,1,1,2]⁻¹,x[1,2,2,2]⁻¹⟩)˲-(x[0,0,2],⟨x[0,1,2,2]⁻¹,x[1,2,2,2]⁻¹⟩)˲
 ```
 """
 struct SzczarbaShuffle{F}

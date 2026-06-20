@@ -4,6 +4,8 @@
 
 ```@docs
 AbstractSimplex
+⋅
+*(::AbstractSimplex, ::AbstractSimplex...)
 ```
 
 ## `SymbolicSimplex`
@@ -13,16 +15,32 @@ SymbolicSimplex
 vertices
 ```
 
-## `ProductSimplex`
+## Product simplices
+
+```@docs
+AbstractProductSimplex
+Base.Tuple(::AbstractProductSimplex)
+length(::AbstractProductSimplex)
+fieldtypes
+```
+
+### `ProductSimplex`
 
 ```@docs
 ProductSimplex
-Base.Tuple(::ProductSimplex)
-length(x::ProductSimplex)
 SimplicialSets.cat
 SimplicialSets.flatten
 swap
 LinearCombinations.Regroup
+```
+
+### Twisted product simplices
+
+```@docs
+LeftTwistedProductSimplex
+RightTwistedProductSimplex
+lefttwistedproductsimplex
+righttwistedproductsimplex
 ```
 
 ## `BarSimplex`
@@ -32,7 +50,7 @@ BarSimplex
 length(::BarSimplex)
 one(::BarSimplex)
 isone(::BarSimplex)
-*(::BarSimplex{T}, ::BarSimplex{T}...) where T
+⋅(::BarSimplex{T}, ::BarSimplex{T}...) where T
 inv(::BarSimplex)
 /(::BarSimplex{T}, ::BarSimplex{T}) where T
 ^(::BarSimplex, ::Integer)
@@ -47,7 +65,7 @@ length(::LoopGroupSimplex)
 isone(::LoopGroupSimplex)
 inv(::LoopGroupSimplex)
 SimplicialSets.mul!
-*(::LoopGroupSimplex{T}, ::LoopGroupSimplex{T}...) where T <: AbstractSimplex
+⋅(::LoopGroupSimplex{T}, ::LoopGroupSimplex{T}...) where T <: AbstractSimplex
 ```
 
 ## Other simplices

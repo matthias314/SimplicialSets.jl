@@ -195,7 +195,7 @@ x[0,1]⊗y[1,2]+x[0]⊗y[0,1,2]+x[0,1,2]⊗y[2]
 
 julia> z = SymbolicSimplex(:z, 2); aw(ProductSimplex(x, y, z))
 Linear{Tensor{Tuple{SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol}}}, Int64} with 6 terms:
-x[0]⊗y[0]⊗z[0,1,2]+x[0]⊗y[0,1]⊗z[1,2]+x[0]⊗y[0,1,2]⊗z[2]+x[0,1]⊗y[1]⊗z[1,2]+x[0,1,2]⊗y[2]⊗z[2]+x[0,1]⊗y[1,2]⊗z[2]
+x[0,1]⊗y[1,2]⊗z[2]+x[0]⊗y[0]⊗z[0,1,2]+x[0]⊗y[0,1]⊗z[1,2]+x[0]⊗y[0,1,2]⊗z[2]+x[0,1]⊗y[1]⊗z[1,2]+x[0,1,2]⊗y[2]⊗z[2]
 
 julia> aw(ProductSimplex(x))
 Linear{Tensor{Tuple{SymbolicSimplex{Symbol}}}, Int64} with 1 term:
@@ -416,6 +416,7 @@ julia> xx ⋅ yy
 ⟨x[0,1,2],y[0,1,2]⟩
 
 julia> xx * yy
+Linear{LoopGroupSimplex{SymbolicSimplex{Symbol}}, Int64} with 2 terms:
 ⟨x[0,1,2,2],y[0,1,1,2]⟩-⟨x[0,1,1,2],y[0,1,2,2]⟩
 ```
 """

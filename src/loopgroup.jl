@@ -198,7 +198,7 @@ Return the inverse of the simplex `g` in the loop group.
 julia> g, h = LoopGroupSimplex(SymbolicSimplex(:x, 2)), LoopGroupSimplex(SymbolicSimplex(:y, 2))
 (⟨x[0,1,2]⟩, ⟨y[0,1,2]⟩)
 
-julia> inv(g*h)
+julia> inv(g⋅h)
 ⟨y[0,1,2]⁻¹,x[0,1,2]⁻¹⟩
 ```
 """
@@ -256,7 +256,7 @@ julia> g = LoopGroupSimplex(SymbolicSimplex(:x, 2))
 julia> h = LoopGroupSimplex(SymbolicSimplex(:y, 2))
 ⟨y[0,1,2]⟩
 
-julia> g*h
+julia> g⋅h
 ⟨x[0,1,2],y[0,1,2]⟩
 ```
 """

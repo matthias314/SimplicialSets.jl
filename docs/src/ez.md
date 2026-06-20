@@ -18,3 +18,10 @@ aw
 shih
 shih_opp
 ```
+
+## Twisted Cartesian products
+
+```@docs
+SzczarbaTwc
+SzczarbaShuffle
+```

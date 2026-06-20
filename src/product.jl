@@ -33,8 +33,8 @@ Return the types of the components of `P` as a tuple.
 
 # Example
 ```jldoctest
-julia> fieldtypes(ProductSimplex{Tuple{SymbolicSimplex{Symbol},}})
-(Char, String)
+julia> fieldtypes(ProductSimplex{Tuple{SymbolicSimplex{Symbol},SymbolicSimplex{Symbol}}})
+(SymbolicSimplex{Symbol}, SymbolicSimplex{Symbol})
 ```
 """
 Base.fieldtypes(::Type{<:AbstractProductSimplex{T}}) where T <: Tuple = fieldtypes(T)
